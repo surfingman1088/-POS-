@@ -1,471 +1,198 @@
-# MVS (Modern Vendor System)
+# YO 團購 POS 系統
 
-MVS is a Laravel and Livewire-based POS and order management system tailored for a small Chinese grocery business. It is designed to help with product listing and pricing, employee management, delivery assignment, order tracking, and day-to-day store operations.
-
-## What This System Is For
-
-This project is mainly tailored for:
-
-- Small grocery or mini-mart stores
-- Chinese grocery businesses that need a simple POS workflow
-- Order tracking and delivery coordination
-- Staff management and operational logging
-- A Laravel and Livewire learning project for improving full-stack development skills
-
-## Requirements
-
-Before installing, make sure you have the following:
-
-- **Git** — Version control system
-  - [Download Git](https://git-scm.com/download/win)
-- A local web server stack: **XAMPP** or **Laragon** (see below for which to choose)
-  - [Download XAMPP](https://www.apachefriends.org/)
-  - [Download Laragon](https://laragon.org/)
-- **PHP 8.2 or newer** (included with XAMPP/Laragon)
-- **Composer** — PHP dependency manager
-  - [Download Composer](https://getcomposer.org/download/)
-- **Node.js and npm** — JavaScript runtime and package manager
-  - [Download Node.js (includes npm)](https://nodejs.org/)
-- Laravel dependencies installed through Composer
-
-### Add PHP to Your Environment Variable
-
-Some commands like `php artisan` only work if Windows can find PHP from the terminal. If you get an error like `php is not recognized`, add PHP to your PATH.
-
-#### If You Are Using XAMPP
-
-1. Open **File Explorer** and go to `C:\xampp\php`.
-2. Copy that folder path.
-3. Search Windows for **Environment Variables** and open **Edit the system environment variables**.
-4. Click **Environment Variables**.
-5. Under **System variables**, select **Path** and click **Edit**.
-6. Click **New** and paste the XAMPP PHP folder path.
-7. Click **OK** on all windows to save.
-8. Close and reopen your terminal, then test with:
-
-```bash
-php -v
-```
-
-#### If You Are Using Laragon
-
-1. Open **File Explorer** and go to the Laragon PHP folder.
-2. Usually this is something like `C:\laragon\bin\php\php-8.x.x`.
-3. Copy that folder path.
-4. Open **Environment Variables** again.
-5. Add the Laragon PHP folder path to **Path**.
-6. Save the changes and reopen your terminal.
-7. Test with:
-
-```bash
-php -v
-```
-
-If the version number appears, PHP is ready and `php artisan` should work normally.
-
-### Choosing Between XAMPP and Laragon
-
-**XAMPP** (Recommended for beginners)
-- Easier to understand and set up
-- More widely used with more online tutorials available
-- Slower and requires more manual configuration
-- Better if you're just starting out
-
-**Laragon** (Recommended for easier workflow)
-- Faster and more modern
-- Automatically handles many configurations
-- Cleaner interface and easier to manage multiple projects
-- Better if you want less headaches and faster setup
-
-Both work great for MVS. Choose based on your preference—the installation steps for each are provided below.
-
-## Installation
-
-### Step 1: Copy the Project to Your Web Server
-
-**Option A: Clone with Git (Recommended)**
-
-Open a terminal and run:
-
-```bash
-# If using XAMPP
-cd C:/xampp/htdocs
-git clone <repository-url> MVS
-
-# If using Laragon
-cd C:/laragon/www
-git clone <repository-url> MVS
-```
-
-**Option B: Manual Copy**
-
-**If using XAMPP:**
-- Copy or clone this project into: `C:/xampp/htdocs/MVS`
-
-**If using Laragon:**
-- Copy or clone this project into: `C:/laragon/www/MVS`
-
-### Step 2: Set Up the Project
-
-1. Open a terminal in the project folder (the MVS folder you just created).
-
-2. Run the setup command:
-
-```bash
-composer run setup
-```
-
-This command will automatically:
-- Install PHP dependencies
-- Create the `.env` file if it doesn't exist
-- Generate the application key
-- Set up the database
-- Create necessary storage folders
-- Install and build frontend assets
-
-### Step 3: Start Your Server
-
-**If using XAMPP:**
-1. Open the XAMPP Control Panel
-2. Click **Start** next to Apache
-3. Click **Start** next to MySQL
-4. Right-click `xampp-control.exe` and select "Run as administrator" for best results
-
-**If using Laragon:**
-1. Open Laragon
-2. Click **Start All**
-3. Laragon handles everything automatically
-
-### Step 4: Access Your Application
-
-1. Open your web browser
-2. Go to `http://localhost` or the address shown in your server control panel
-3. You should see the MVS application load
-
-## Basic Usage
-
-After installation, the system can be used for:
-
-- Adding and managing products
-- Viewing and updating product prices
-- Managing employees
-- Creating and tracking orders
-- Assigning deliveries
-- Monitoring store activity and logs
-
-## Environment Configuration (.env)
-
-After running `composer run setup`, open your `.env` file and review these key settings.
-
-### App Settings
-
-- `APP_NAME`: Display name of your application
-- `APP_ENV`: Environment mode (`production`, `local`, etc.)
-- `APP_DEBUG`: Should be `false` in production, `true` during local debugging
-- `APP_URL`: Base URL of the app
-	- Example for vhost: `http://mgm.store`
-	- Example for LAN access: `http://192.168.1.20`
-
-### Database Settings
-
-- `DB_CONNECTION`: Database driver (`mysql` by default)
-- `DB_HOST`: Database host (usually `127.0.0.1` for XAMPP)
-- `DB_PORT`: MySQL port (usually `3306`)
-- `DB_DATABASE`: Database name you created for MVS
-- `DB_USERNAME`: MySQL username (often `root` in local XAMPP)
-- `DB_PASSWORD`: MySQL password (blank by default on many local XAMPP installs)
-
-### Session / Queue / Cache
-
-- `SESSION_DRIVER=database`: Stores session data in DB tables
-- `QUEUE_CONNECTION=database`: Uses DB queue driver
-- `CACHE_STORE=database`: Uses DB-backed cache
-
-If these are set to `database`, make sure migrations run successfully so required tables exist.
-
-### Store Config (Project-Specific)
-
-From `.env.example`, these values control business defaults:
-
-- `STORE_NAME`: Primary store name
-- `STORE_NAME_ALT`: Alternate store name
-- `STORE_ADDRESS`: Store address shown in the system
-- `STORE_DEFAULT_ORDER_TYPE`: Default order type (`walk_in` or `deliver`)
-- `STORE_DEFAULT_PAYMENT_TYPE`: Default payment type (`cash` or `gcash`)
-- `STORE_OPEN_HOUR`: Store opening hour used by the dashboard hour chart
-- `STORE_CLOSE_HOUR`: Store closing hour used by the dashboard hour chart
-- `STORE_OPEN_DAYS`: Comma-separated open days (`1` = Monday, `7` = Sunday)
-- `ORDER_EDIT_LOCK_STATUS`: Comma-separated order statuses where editing should be locked
-	- Example: `in_transit,delivered,completed,cancelled`
-- `OTHER_PAYMENT_TYPES`: Additional Comma-separated payment types aside from cash
-- `SESSION_EXPIRE_DAYS`: Sets a device or account to be auto-logged out for the set days.
-
-The dashboard weekday analytics chart uses `STORE_OPEN_DAYS`, so it only shows the days your store is actually open.
-
-### Recommended First `.env` Edits
-
-1. Set `APP_URL` to your virtual host or LAN URL.
-2. Set `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` to your local DB credentials.
-3. Set `STORE_NAME`, `STORE_NAME_ALT`, `STORE_ADDRESS`, and the store hour/day settings to your actual store values.
-4. Re-run migrations if needed:
-
-```bash
-php artisan migrate --force
-```
-
-## LAN Hosting Guide (Accessing MVS from Other Devices on Your Network)
-
-Once you have MVS running on your computer, you might want to access it from other devices on your local network (like a tablet or another computer). This guide covers both XAMPP and Laragon.
-
-### What is LAN?
-**LAN** means "Local Area Network"—it's the Wi-Fi or wired network in your home or office. Hosting on LAN lets you access your application from phones, tablets, or other computers connected to the same network.
+> 基於 Laravel 12 + Livewire + Flux UI 開發的多分店團購 POS 系統，完整繁體中文介面。
 
 ---
 
-## Option 1: LAN Hosting with XAMPP
+## 分店存取資訊（正式伺服器）
 
-### Step 1: Find Your LAN IP Address
+| 分店 | 網址 | 帳號 | 預設密碼 |
+|------|------|------|---------|
+| 八德店 | http://45.76.210.55:8001 | admin | 123 |
+| 三峽店 | http://45.76.210.55:8002 | admin | 123 |
+| 大竹店 | http://45.76.210.55:8003 | admin | 123 |
+| 林口店 | http://45.76.210.55:8004 | admin | 123 |
+| 藝文店 | http://45.76.210.55:8005 | admin | 123 |
+| 菓林店 | http://45.76.210.55:8006 | admin | 123 |
 
-1. Open **Command Prompt** (search for "cmd" in Windows)
-2. Type: `ipconfig`
-3. Look for **IPv4 Address** under your network connection
-4. You should see something like: `192.168.1.20` — **write this down**
-
-### Step 2: Configure Apache
-
-1. Open this file with Notepad:
-   ```
-   C:\xampp\apache\conf\httpd.conf
-   ```
-
-2. Search for the line: `Listen 80`
-
-3. Add a new line directly below it:
-   ```
-   NameVirtualHost *:80
-   ```
-
-4. Search for this line:
-   ```
-   Require local
-   ```
-
-5. Replace it with:
-   ```
-   Require all granted
-   ```
-   *(This allows other devices to connect)*
-
-6. Save the file
-
-### Step 3: Configure Virtual Hosts
-
-1. Open this file with Notepad:
-   ```
-   C:\xampp\apache\conf\extra\httpd-vhosts.conf
-   ```
-
-2. Add this configuration at the end (replace `192.168.1.20` with your actual IP from Step 1):
-
-```apache
-# MVS LAN Server
-<VirtualHost *:80>
-    ServerName mgm.store
-    DocumentRoot "C:/xampp/htdocs/MVS/public"
-
-    <Directory "C:/xampp/htdocs/MVS/public">
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-
-<VirtualHost *:80>
-    ServerName localhost
-    DocumentRoot "C:/xampp/htdocs"
-
-    <Directory "C:/xampp/htdocs">
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-
-<VirtualHost *:80>
-    ServerName 192.168.1.20
-    DocumentRoot "C:/xampp/htdocs/MVS/public"
-
-    <Directory "C:/xampp/htdocs/MVS/public">
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-```
-
-3. Save the file
-
-### Step 4: Enable Firewall Access
-
-1. Open **Windows Defender Firewall**
-2. Click **Allow an app through firewall**
-3. Find and check the boxes next to:
-   - Apache HTTP Server
-   - Anything related to XAMPP
-4. Make sure **Private Network** is checked
-
-### Step 5: Update Your Environment File
-
-1. Open the `.env` file in your MVS project
-2. Find the line: `APP_URL=http://localhost`
-3. Change it to: `APP_URL=http://192.168.1.20` (use your actual IP)
-
-### Step 6: Restart XAMPP
-
-1. Open XAMPP Control Panel
-2. Click **Stop** next to Apache
-3. Wait a few seconds
-4. Click **Start** next to Apache
-
-### Step 7: Test Access
-
-**On your computer:**
-- Open browser and go to: `http://192.168.1.20`
-
-**On another device (phone, tablet, another computer):**
-- Make sure it's on the same Wi-Fi
-- Open browser and go to: `http://192.168.1.20`
-- MVS should load!
+> **重要**：首次登入後請立即修改預設密碼！
 
 ---
 
-## Option 2: LAN Hosting with Laragon
+## 系統架構
 
-Laragon makes this much simpler! Here's how:
-
-### Step 1: Find Your LAN IP Address
-
-1. Open **Command Prompt** (search for "cmd" in Windows)
-2. Type: `ipconfig`
-3. Look for **IPv4 Address** — write this down (e.g., `192.168.1.20`)
-
-### Step 2: Configure Laragon Settings
-1. Make sure that **Auto-create Virtual Hosts** is toggled checked, if not toggle it and restart laragon
-2. On the Services & Ports tab make sure that **Apache** and **MySQL** are toggled. Toggle other services if you need them, otherwise don't.
-
-### Step 3: Configure Apache Main Config
-
-1. Right-click **Laragon** → **Menu** → **Apache** → **httpd.conf**
-2. Search for: `Listen 80`
-3. Add below it: `NameVirtualHost *:80`
-4. Save and close
-
-### Step 4: Configure Virtual Hosts (Optional, IF ONLY **STEP 3** DID NOT WORK)
-
-1. Right-click the **Laragon** icon in the system tray (bottom right)
-2. Click **Menu** → **Apache** → **sites-enabled** → **00-default.conf**
-3. A text editor will open (like Notepad++)
-
-4. Add this configuration at the end (replace `192.168.1.20` with your IP from Step 1):
-
-```apache
-# MVS LAN Server
-    # ServerAlias is not needed for IP access if VirtualHost is *:80
-    # But you can add domain wildcards here if needed:
-    # ServerAlias *.mgm.store 
-
-<VirtualHost *:80>
-    ServerName localhost
-    DocumentRoot "C:/laragon/www"
-
-    <Directory "C:/laragon/www">
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-
-<VirtualHost *:80>
-    ServerName 192.168.1.20
-    DocumentRoot "C:/laragon/www/MVS/public"
-
-    <Directory "C:/laragon/www/MVS/public">
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
 ```
-
-5. Save and close the file
-
-### Step 5: Update Your Environment File
-
-1. Open the `.env` file in your MVS project
-2. Find: `APP_URL=http://localhost`
-3. Change to: `APP_URL=http://192.168.1.20` (use your actual IP)
-
-### Step 6: Restart Laragon
-
-1. Right-click **Laragon** in the system tray
-2. Click **Stop All**
-3. Wait a moment
-4. Click **Start All**
-
-### Step 7: Allow Through Windows Firewall
-
-1. Open **Windows Defender Firewall**
-2. Click **Allow an app through firewall**
-3. Check boxes for:
-   - Apache HTTP Server
-   - Laragon
-4. Make sure **Private Network** is checked
-
-### Step 8: Test Access
-
-**On your computer:**
-- Open browser → go to: `http://192.168.1.20`
-
-**On another device:**
-- Same Wi-Fi network required
-- Open browser → go to: `http://192.168.1.20`
-- MVS should load!
-
-### Optional: Auto-Start Laragon on Boot
-
-1. Right-click **Laragon**
-2. Click **Preferences**
-3. Check:
-   - "Start Laragon when Windows starts"
-   - "Start All when Laragon starts"
-   - "Run minimized"
-4. Click **Save**
+VPS（45.76.210.55 - Vultr Tokyo）
+├── Nginx 1.28（反向代理）
+├── PHP 8.5-FPM
+├── MySQL 8.4
+└── 各分店獨立實例
+    ├── /var/www/pos-bade     → 八德店（Port 8001）
+    ├── /var/www/pos-sanxia   → 三峽店（Port 8002）
+    ├── /var/www/pos-dazhu    → 大竹店（Port 8003）
+    ├── /var/www/pos-linkou   → 林口店（Port 8004）
+    ├── /var/www/pos-yiwen    → 藝文店（Port 8005）
+    └── /var/www/pos-guolin   → 菓林店（Port 8006）
+```
 
 ---
 
-## Using a Custom Domain Name (Optional)
+## 快速操作指南
 
-If you don't want to use IP addresses, you can use `mgm.store` instead:
+### SSH 連入 VPS
 
-### On Your Main Computer:
+```bash
+ssh root@45.76.210.55
+```
 
-1. Open Notepad as Administrator (right-click → Run as administrator)
-2. Go to **File** → **Open**
-3. Navigate to: `C:\Windows\System32\drivers\etc\`
-4. Open the file: `hosts` (no extension)
-5. Add this line at the end:
+### 一、全新安裝（新 VPS）
+
+```bash
+curl -O https://raw.githubusercontent.com/surfingman1088/-POS-/main/scripts/install.sh
+chmod +x install.sh
+bash install.sh
+```
+
+### 二、升級系統（從 GitHub 拉取最新代碼）
+
+```bash
+ssh root@45.76.210.55
+bash /opt/yo-pos-source/scripts/upgrade.sh
+```
+
+或透過 **GitHub Actions** 自動部署（推送到 main 分支即自動觸發）。
+
+### 三、新增分店
+
+```bash
+ssh root@45.76.210.55
+bash /opt/yo-pos-source/scripts/add-branch.sh <分店ID> <分店名稱> <埠號>
+
+# 範例：新增中壢店（Port 8007）
+bash /opt/yo-pos-source/scripts/add-branch.sh zhongli 中壢店 8007
+```
+
+### 四、備份資料庫
+
+```bash
+ssh root@45.76.210.55
+bash /opt/yo-pos-source/scripts/backup.sh
+```
+
+設定每日自動備份（凌晨 2 點）：
+
+```bash
+crontab -e
+# 加入以下一行：
+0 2 * * * bash /opt/yo-pos-source/scripts/backup.sh >> /root/backup.log 2>&1
+```
+
+### 五、查看系統狀態
+
+```bash
+ssh root@45.76.210.55
+bash /opt/yo-pos-source/scripts/status.sh
+```
+
+---
+
+## GitHub Actions 自動部署設定
+
+每次推送代碼到 `main` 分支時，GitHub Actions 會自動將最新代碼部署到 VPS。
+
+### 設定步驟
+
+1. 在 VPS 上生成 SSH 金鑰：
+   ```bash
+   ssh-keygen -t ed25519 -C "github-actions" -f ~/.ssh/github_deploy -N ""
+   cat ~/.ssh/github_deploy.pub >> ~/.ssh/authorized_keys
+   cat ~/.ssh/github_deploy  # 複製這段私鑰
    ```
-   192.168.1.20    mgm.store
-   ```
-   *(Replace `192.168.1.20` with your actual IP)*
-6. Save and close
 
-### On Other Devices (More Complex):
+2. 在 GitHub 儲存庫設定 Secrets：
+   - 前往：`Settings` → `Secrets and variables` → `Actions`
+   - 新增 `VPS_SSH_KEY`：貼上上面複製的私鑰內容
+   - 新增 `VPS_HOST`：填入 `45.76.210.55`
 
-This requires DNS setup on your network. For now, using the IP address is simpler.
+3. 之後每次 `git push` 到 main 分支，系統會自動更新所有分店。
 
-### Access:
+---
 
-- On your computer: `http://mgm.store`
-- On other devices: Still use `http://192.168.1.20`
+## 功能模組
 
-## Notes
+| 模組 | 功能說明 |
+|------|---------|
+| 儀表盤 | 即時銷售 KPI、今日營收、訂單數、庫存狀態 |
+| 訂單 | 建立新訂單、選擇商品、結帳、收款 |
+| 訂單記錄 | 查看歷史訂單、篩選、匯出 |
+| 產品 | 商品管理（新增、編輯、刪除） |
+| 類別 | 商品分類管理 |
+| 庫存審計 | 庫存盤點與調整 |
+| 客戶 | 客戶資料管理 |
+| 員工 | 員工帳號與權限管理 |
+| 折扣預設 | 設定折扣方案 |
+| 帳戶與會話 | 帳號管理、登入記錄 |
+| 系統日誌 | 操作記錄追蹤 |
 
-- If migrations fail, confirm your database credentials in `.env`.
-- If assets are missing, rerun `npm install` and `npm run build`.
-- If the site is not reachable on LAN, check Windows Firewall and Apache port 80 access.
+---
+
+## 技術棧
+
+- **後端框架**：Laravel 12
+- **前端框架**：Livewire 3 + Flux UI
+- **資料庫**：MySQL 8.4
+- **Web 伺服器**：Nginx 1.28
+- **PHP 版本**：8.5
+- **語言**：繁體中文（zh_TW）
+
+---
+
+## 目錄結構
+
+```
+scripts/
+├── install.sh      # 全新安裝腳本（適用 Ubuntu 22.04/24.04/26.04）
+├── upgrade.sh      # 升級腳本（從 GitHub 拉取最新代碼）
+├── add-branch.sh   # 新增分店腳本
+├── backup.sh       # 資料庫備份腳本
+└── status.sh       # 系統狀態檢查腳本
+
+.github/
+└── workflows/
+    └── deploy.yml  # GitHub Actions 自動部署
+
+lang/
+├── zh.json         # 繁體中文翻譯
+└── en.json         # 英文翻譯
+```
+
+---
+
+## 常見問題
+
+**Q：如何修改管理員密碼？**
+登入後點選左下角帳號名稱 → 帳戶設定 → 修改密碼
+
+**Q：如何新增商品？**
+登入後點選左側選單「產品」→「新增產品」
+
+**Q：系統無法存取怎麼辦？**
+```bash
+ssh root@45.76.210.55
+bash /opt/yo-pos-source/scripts/status.sh
+```
+
+**Q：如何還原備份？**
+```bash
+# 解壓縮備份
+gunzip /root/pos-backups/YYYYMMDD_HHMMSS/pos_bade.sql.gz
+# 還原到資料庫
+mysql -u root -pYoPOS2026Secure! pos_bade < /root/pos-backups/YYYYMMDD_HHMMSS/pos_bade.sql
+```
+
+**Q：如何在本機（Windows）測試？**
+請參考 [本機安裝指南](docs/本機安裝指南.md)
+
+---
+
+*YO 團購 POS 系統 © 2026*

@@ -33,3 +33,10 @@ auth.json
 _ide_helper.php
 _ide_helper_models.php
 .phpstorm.meta.php
+
+# 舊版部署腳本（已移至 scripts/ 目錄）
+/deploy_*.sh
+/branches.conf
+/generate-env.sh
+/add-branch.sh
+/deploy-vps.sh
