@@ -42,7 +42,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Products route
     Volt::route('products', 'product.dashboard')->name('products');
-    Volt::route('products/inventory', 'product.inventoryaudit')->name('inventory.audit');
+    Route::get('products/inventory', \App\Livewire\Product\InventoryAudit::class)->name('inventory.audit');
     Volt::route('products/categories', 'product.categories')->name('products.categories');
 
     // Customers route
