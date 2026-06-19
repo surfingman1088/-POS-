@@ -4,46 +4,19 @@
 
 ---
 
-## 分店存取資訊（正式伺服器）
-
-| 分店 | 網址 | 帳號 | 預設密碼 |
-|------|------|------|---------|
-| 八德店 | http://45.76.210.55:8001 | admin | 123 |
-| 三峽店 | http://45.76.210.55:8002 | admin | 123 |
-| 大竹店 | http://45.76.210.55:8003 | admin | 123 |
-| 林口店 | http://45.76.210.55:8004 | admin | 123 |
-| 藝文店 | http://45.76.210.55:8005 | admin | 123 |
-| 菓林店 | http://45.76.210.55:8006 | admin | 123 |
-
-> **重要**：首次登入後請立即修改預設密碼！
-
----
-
 ## 系統架構
 
 ```
-VPS（45.76.210.55 - Vultr Tokyo）
-├── Nginx 1.28（反向代理）
+VPS（Vultr Tokyo）
+├── Nginx（反向代理）
 ├── PHP 8.5-FPM
 ├── MySQL 8.4
-└── 各分店獨立實例
-    ├── /var/www/pos-bade     → 八德店（Port 8001）
-    ├── /var/www/pos-sanxia   → 三峽店（Port 8002）
-    ├── /var/www/pos-dazhu    → 大竹店（Port 8003）
-    ├── /var/www/pos-linkou   → 林口店（Port 8004）
-    ├── /var/www/pos-yiwen    → 藝文店（Port 8005）
-    └── /var/www/pos-guolin   → 菓林店（Port 8006）
+└── 各分店獨立實例（每店獨立資料庫）
 ```
 
 ---
 
 ## 快速操作指南
-
-### SSH 連入 VPS
-
-```bash
-ssh root@45.76.210.55
-```
 
 ### 一、全新安裝（新 VPS）
 
@@ -56,7 +29,6 @@ bash install.sh
 ### 二、升級系統（從 GitHub 拉取最新代碼）
 
 ```bash
-ssh root@45.76.210.55
 bash /opt/yo-pos-source/scripts/upgrade.sh
 ```
 
@@ -65,7 +37,6 @@ bash /opt/yo-pos-source/scripts/upgrade.sh
 ### 三、新增分店
 
 ```bash
-ssh root@45.76.210.55
 bash /opt/yo-pos-source/scripts/add-branch.sh <分店ID> <分店名稱> <埠號>
 
 # 範例：新增中壢店（Port 8007）
@@ -75,7 +46,6 @@ bash /opt/yo-pos-source/scripts/add-branch.sh zhongli 中壢店 8007
 ### 四、備份資料庫
 
 ```bash
-ssh root@45.76.210.55
 bash /opt/yo-pos-source/scripts/backup.sh
 ```
 
@@ -90,7 +60,6 @@ crontab -e
 ### 五、查看系統狀態
 
 ```bash
-ssh root@45.76.210.55
 bash /opt/yo-pos-source/scripts/status.sh
 ```
 
@@ -112,7 +81,7 @@ bash /opt/yo-pos-source/scripts/status.sh
 2. 在 GitHub 儲存庫設定 Secrets：
    - 前往：`Settings` → `Secrets and variables` → `Actions`
    - 新增 `VPS_SSH_KEY`：貼上上面複製的私鑰內容
-   - 新增 `VPS_HOST`：填入 `45.76.210.55`
+   - 新增 `VPS_HOST`：填入您的 VPS IP 位址
 
 3. 之後每次 `git push` 到 main 分支，系統會自動更新所有分店。
 
@@ -157,10 +126,6 @@ scripts/
 ├── backup.sh       # 資料庫備份腳本
 └── status.sh       # 系統狀態檢查腳本
 
-.github/
-└── workflows/
-    └── deploy.yml  # GitHub Actions 自動部署
-
 lang/
 ├── zh.json         # 繁體中文翻譯
 └── en.json         # 英文翻譯
@@ -178,16 +143,7 @@ lang/
 
 **Q：系統無法存取怎麼辦？**
 ```bash
-ssh root@45.76.210.55
 bash /opt/yo-pos-source/scripts/status.sh
-```
-
-**Q：如何還原備份？**
-```bash
-# 解壓縮備份
-gunzip /root/pos-backups/YYYYMMDD_HHMMSS/pos_bade.sql.gz
-# 還原到資料庫
-mysql -u root -pYoPOS2026Secure! pos_bade < /root/pos-backups/YYYYMMDD_HHMMSS/pos_bade.sql
 ```
 
 **Q：如何在本機（Windows）測試？**
