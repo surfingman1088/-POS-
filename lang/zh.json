@@ -1,7 +1,6 @@
 {
     "Chinese": "中文",
     "English": "英文",
-
     "Cancel": "取消",
     "Close": "關閉",
     "Reset": "重置",
@@ -13,11 +12,8 @@
     "N/A": "無",
     "Customers": "客戶",
     "optional": "可選",
-
     "Log Out": "登出",
-
     "Back": "返回",
-
     "Log In": "登入",
     "Welcome Back": "歡迎",
     "Please enter your email and password below to log in": "請輸入您的電子郵件和密碼以登入",
@@ -26,7 +22,6 @@
     "Forgot your password?": "忘記密碼？",
     "Remember me": "記住我",
     "Don't have an account?": "沒有帳戶？",
-
     "Register": "註冊",
     "Create an account": "建立帳戶",
     "Enter your details below to create your account": "請在下面輸入您的詳細資訊以建立帳戶",
@@ -35,10 +30,8 @@
     "Confirm password": "確認密碼",
     "Create account": "建立帳戶",
     "Already have an account?": "已有帳戶？",
-
     "Settings": "設定",
     "Manage your profile and account settings": "管理您的個人資料和帳戶設定",
-
     "Profile": "個人資料",
     "Update your account information": "更新您的帳戶資訊",
     "Name": "姓名",
@@ -47,30 +40,25 @@
     "Save": "儲存",
     "Saved": "已儲存",
     "Search languages": "搜尋語言",
-
     "Delete account": "刪除帳戶",
     "Permanently delete your account will remove all of its data.": "永久刪除您的帳戶將移除其所有資料.",
     "Are you sure you want to delete your account?": "您確定要刪除您的帳戶嗎？",
     "Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.": "一旦您的帳戶被刪除，其所有資源和資料將被永久刪除。請輸入您的密碼以確認您希望永久刪除您的帳戶。",
     "Enter Password": "請輸入密碼",
-
     "Password": "帳號密碼",
     "Update Password": "更新密碼",
     "Ensure your account is using a long, random password to stay secure": "確保您的帳戶使用長且隨機的密碼以保持安全",
     "Current Password": "當前密碼",
     "New Password": "新密碼",
     "Confirm Password": "確認密碼",
-
     "Appearance": "外觀",
     "Update the appearance settings for your account": "更新您的帳戶外觀設定",
     "Light": "淺色",
     "Dark": "深色",
     "System": "系統",
-
     "Language": "語言",
     "Update the language settings for your account": "更新您的帳戶語言設定",
     "Current language": "語言",
-
     "Shop": "商店",
     "Management": "管理",
     "Records": "記錄",
@@ -129,7 +117,6 @@
     "Stop": "停止",
     "Confirm & Save": "確認並儲存",
     "Review Orders": "稽核訂單",
-
     "QR Code Option": "二維碼選項",
     "QR Code Payment Settings": "二維碼支付設定",
     "Upload your GCash QR code or payment reference image like instaPay. This will be displayed to customers when they choose GCash as their payment method.": "上傳您的GCash二維碼或支付參考圖片，例如instaPay。當客戶選擇GCash作為他們的支付方式時，這些二維碼或圖片將會顯示出來。",
@@ -156,7 +143,6 @@
     "Click and drag to select the area you want to keep. Focus on your QR code and important details.": "點選並拖動以選擇您想保留的區域。聚焦於您的二維碼和重要細節。",
     "QR Code Image uploaded successfully": "上傳二維碼圖片",
     "QR Code Image deleted successfully": "刪除二維碼圖片",
-
     "Dashboard": "儀表盤",
     "Welcome back! Here's what's happening today.": "歡迎回來！以下是今天的情況。",
     "Today's Revenue": "今日收入",
@@ -281,7 +267,6 @@
     "Take Photo": "拍照",
     "Upload a new image to replace the current one.": "上傳新圖片以替換當前圖片。",
     "item(s)": "件",
-
     "Orders by Day (Current vs Previous Week)": "每日訂單（本週 vs 上週）",
     "Monthly Trends (Last 6 Months)": "月度趨勢（最近6個月）",
     "Sales by Category (Last 30 Days)": "按類別劃分的銷售額（最近30天）",
@@ -293,7 +278,6 @@
     "Hour": "小時",
     "Peak Activity": "高峰活動",
     "Peak Profit": "高峰利潤",
-
     "Orders": "訂單",
     "Orders Dashboard": "訂單儀表盤",
     "Ongoing": "進行中",
@@ -320,7 +304,8 @@
     "Line total": "小計",
     "Stock Quantity": "庫存數量",
     "Description": "描述",
-    "Category": "分類",    "Address": "地址",
+    "Category": "分類",
+    "Address": "地址",
     "Unit": "單元",
     "Contact Number": "聯絡電話",
     "Save Record": "儲存銷售記錄",
@@ -379,7 +364,6 @@
     "Confirm Deletion": "確認刪除",
     "Are you sure you want to delete this order? This action can't be undone.": "您確定要刪除此訂單嗎？此操作無法撤銷。",
     "Receipt #": "收據編號",
-
     "Create New Order": "建立新訂單",
     "Back to Dashboard": "返回訂單儀表盤",
     "Order Type": "訂單型別",
@@ -413,7 +397,6 @@
     "Customer doesn't exist? Create one.": "客戶不存在？建立一個。",
     "Creating New Customer": "建立新客戶",
     "Creating": "建立中",
-
     "Products": "產品",
     "Product Inventory": "產品庫存",
     "Manage your product inventory and stock levels": "管理您的產品庫存和庫存水平",
@@ -458,7 +441,6 @@
     "No customer selected. Choose one above or create a new one.": "未選擇客戶。請在上方選擇一個或建立一個新客戶。",
     "Select Customer": "選擇客戶",
     "Item Product": "商品",
-
     "Customer": "客戶",
     "Customer Management": "客戶管理",
     "Manage your customers and their information": "管理您的客戶及其資訊",
@@ -481,7 +463,6 @@
     "Create Customer": "建立客戶",
     "Update Customer": "更新客戶",
     "Confirm Delete": "確認刪除",
-
     "Employees": "員工",
     "Employee Management": "員工管理",
     "Manage delivery personnel and staff": "管理送貨人員和員工",
@@ -539,7 +520,6 @@
     "Can be Deleted": "可刪除",
     "Protected (Has Order History)": "受保護（有訂單歷史）",
     "Locked": "編輯鎖定",
-
     "Orders History": "訂單歷史",
     "Browse and search orders by various criteria.": "透過各種標準瀏覽和搜尋訂單。",
     "orders loaded": "已載入訂單",
@@ -562,11 +542,9 @@
     "Orders Records": "訂單記錄",
     "All Payments": "所有支付",
     "All Status": "所有狀態",
-
     "Processing": "處理中",
     "Please wait while we process your request": "請稍候，我們正在處理您的請求",
     "Please Do not Close This Window": "請不要關閉此視窗",
-
     "Order created successfully!": "訂單建立成功！",
     "Order not found.": "未找到訂單。",
     "Order \":receipt\" has been marked as paid!": "訂單“:receipt”已標記為已付款！",
@@ -576,9 +554,7 @@
     "Order #:receipt cannot be edited once it is :status.": "訂單#:receipt 在狀態為 :status 時無法編輯。",
     "This order cannot be edited.": "此訂單無法編輯。",
     "Order #:receipt updated.": "訂單#:receipt 已更新。",
-
     "Updating...": "正在更新...",
-
     "Employee created successfully!": "員工建立成功！",
     "Employee updated successfully!": "員工更新成功！",
     "Employee not found!": "未找到員工。",
@@ -588,13 +564,11 @@
     "Employee not found or not archived!": "未找到員工或員工未歸檔。",
     "Cannot permanently delete employee with order history!": "無法永久刪除有訂單歷史的員工！",
     "Employee :name permanently deleted!": "員工 :name 已永久刪除！",
-
     "Customer created successfully!": "客戶建立成功！",
     "Customer updated successfully!": "客戶更新成功！",
     "Customer not found!": "未找到客戶。",
     "Cannot delete customer with existing orders!": "無法刪除已有訂單的客戶！",
     "Customer :name deleted successfully!": "客戶 :name 刪除成功！",
-
     "Product created successfully!": "產品建立成功！",
     "Product not found!": "未找到產品。",
     "Product :name updated successfully!": "產品 :name 更新成功！",
@@ -603,12 +577,10 @@
     "Cannot permanently delete product with order history!": "無法永久刪除有訂單歷史的產品！",
     "Product :name permanently deleted!": "產品 :name 已永久刪除！",
     "Check logs for category debug info": "請檢視日誌以獲取類別除錯資訊",
-
     "Order number, customer, delivered by": "訂單號、客戶、配送員",
     "Search Orders": "搜尋訂單",
     "Review Sales Record": "稽核銷售記錄",
     "Confirm": "確認",
-
     "Sort by": "排序方式",
     "Date created": "建立日期",
     "Descending": "降序",
@@ -616,17 +588,14 @@
     "All Years": "所有年份",
     "All Months": "所有月份",
     "All Days": "所有日期",
-
     "Please fill in all required fields.": "請填寫所有必填欄位。",
     "Not Provided": "未提供",
-
     "Order #:receipt created": "訂單#:receipt已建立",
     "Order #:receipt updated": "訂單#:receipt已更新",
     "Order #:receipt cancelled": "訂單#:receipt已取消",
     "Refund processed for order #:receipt": "訂單#:receipt的退款已處理",
     "Manual adjustment for order #:receipt": "訂單#:receipt的手動調整",
     "Stock restored for order #:receipt": "訂單#:receipt的庫存已恢復",
-
     "Accounts & Sessions": "帳戶與會話",
     "Accounts, Devices & Sessions": "帳戶、裝置與會話",
     "Create accounts, review devices, and manage active sessions from one admin view.": "從一個管理員檢視建立帳戶、檢視裝置並管理活躍會話。",
@@ -653,7 +622,6 @@
     "Remembered Devices": "記住的裝置",
     "Active Sessions": "活躍會話",
     "days": "天",
-
     "System Logs": "系統日誌",
     "System Audit Logs": "系統審計日誌",
     "Monitor user actions, logins, devices, sessions, and account activity in one place.": "在一個地方監控使用者操作、登入、裝置、會話和帳戶活動。",
@@ -683,7 +651,6 @@
     "Failed Logins": "登入失敗",
     "Security Events": "安全事件",
     "Users": "使用者",
-
     "All Actions": "所有操作",
     "Account Created": "帳戶已建立",
     "Account Deleted": "帳戶已刪除",
@@ -702,7 +669,6 @@
     "iOS": "iOS",
     "Linux": "Linux",
     "item": "項",
-
     "Categories": "類別",
     "Product Categories": "產品類別",
     "Create, rename, and remove product categories without touching the code.": "建立、重新命名和刪除產品類別，無需修改程式碼。",
@@ -746,7 +712,6 @@
     "Category deleted successfully!": "類別刪除成功！",
     "Category name is required.": "類別名稱是必填項。",
     "This category name is already in use.": "此類別名稱已被使用。",
-
     "Discount Presets": "折扣預設",
     "Create Discount Presets": "建立折扣預設",
     "Edit Discount Presets": "編輯折扣預設",
@@ -781,7 +746,6 @@
     "Breakdown of all inventory movement types.": "所有庫存變動型別的分類。",
     "orders per active employee": "每位活躍員工的訂單數",
     "orders per active customer": "每位活躍客戶的訂單數",
-
     "January": "一月",
     "February": "二月",
     "March": "三月",
@@ -799,7 +763,6 @@
     "7 Days": "1周",
     "30 Days": "1月",
     "This Month's Repeated Customers": "本月重複客戶",
-
     "Log in": "登入",
     "Created :name account": "已建立 :name 的帳戶",
     "Deleted :name account": "已刪除 :name 的帳戶",
@@ -817,6 +780,63 @@
     "Just now": "剛剛",
     ":count seconds ago": ":count 秒前",
     ":count minutes ago": ":count 分鐘前",
-    ":count hours ago": ":count 小時前"
+    ":count hours ago": ":count 小時前",
+    "Already returned": "已退貨",
+    "Cannot edit": "無法編輯",
+    "Cart": "購物車",
+    "Cart is empty": "購物車是空的",
+    "Cashier": "收銀員",
+    "Click a product to add it": "點選商品以加入",
+    "Complimentary — no charge": "贈品 — 免費",
+    "Confirm Payment": "確認付款",
+    "Confirm refund": "確認退款",
+    "Courier": "配送員",
+    "Current upload": "目前上傳",
+    "Customer Info": "客戶資訊",
+    "Delete Order": "刪除訂單",
+    "Discount": "折扣",
+    "Free": "免費",
+    "Fully returned": "全額退貨",
+    "GCash QR": "GCash QR",
+    "Manage presets": "管理預設",
+    "New Product": "新增商品",
+    "No Discount": "無折扣",
+    "No delivery personnel found.": "找不到配送員。",
+    "No proof of payment is required for cash payments.": "現金付款不需要付款憑證。",
+    "OOS": "缺貨",
+    "Order": "訂單",
+    "Ordered": "已下單",
+    "Partial": "部分",
+    "Pay Status": "付款狀態",
+    "Please fill in all required customer fields before saving.": "請在儲存前填寫所有必填的客戶欄位。",
+    "Please select or create a customer and fill in all delivery details before saving.": "請在儲存前選擇或建立客戶並填寫所有配送資訊。",
+    "Please select or create a customer for delivery.": "請為配送選擇或建立客戶。",
+    "Please wait while the image is being uploaded": "圖片上傳中，請稍候",
+    "Preview": "預覽",
+    "Print receipt": "列印收據",
+    "Process refund": "處理退款",
+    "Proof of Payment": "付款憑證",
+    "Proof of payment preview": "付款憑證預覽",
+    "Qty / kg": "數量 / 公斤",
+    "Remove item": "移除商品",
+    "Restore to inventory": "歸還庫存",
+    "Return quantity": "退貨數量",
+    "Review & Payment": "確認與付款",
+    "Sale Details": "銷售資訊",
+    "Saving…": "儲存中…",
+    "Slide to set how many units to return. Toggle off if an item is damaged and should not go back to stock.": "滑動設定退貨數量。若商品損壞不應歸還庫存，請關閉開關。",
+    "Some not restocked": "部分未歸還庫存",
+    "Subtotal": "小計",
+    "The new product will appear here after it is created.": "新商品建立後將顯示在此。",
+    "Total due": "應付金額",
+    "Total is zero — no cash input required.": "總計為零 — 無需輸入現金金額。",
+    "Try a different search or category": "請嘗試其他搜尋或類別",
+    "Turn off if damaged or unsellable": "若商品損壞或無法銷售請關閉",
+    "Type": "類型",
+    "Unassigned": "未指派",
+    "Uploading proof of payment": "上傳付款憑證中",
+    "View Order": "查看訂單",
+    "View order": "查看訂單",
+    "returned": "已退貨",
+    "unit": "單位"
 }
-
