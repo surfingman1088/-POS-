@@ -8,6 +8,7 @@ use App\Http\Middleware\EnsureTemporaryDeviceSession;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Middleware\TrustProxies;
 
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -16,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust all proxies (needed for reverse proxy / cloud deployment)
+        $middleware->trustProxies(at: '*');
         // Set language from session, append after other web middleware
         $middleware->appendToGroup('web', SetLocaleFromSession::class);
         $middleware->appendToGroup('web', EnsureTemporaryDeviceSession::class);
