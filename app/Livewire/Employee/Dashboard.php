@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Services\System\AuditLogsService;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 
 class Dashboard extends Component
 {
