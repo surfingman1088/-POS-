@@ -658,9 +658,14 @@
                     </div>
                     <div>
                         <flux:input wire:model="createUser.password" :label="__('Password')" type="password" required viewable />
+                        <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            <i class="fas fa-info-circle mr-1"></i>{{ __('At least 6 characters') }}
+                        </p>
+                        @error('createUser.password') <p class="mt-1 text-xs text-red-600 dark:text-red-400"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <flux:input wire:model="createUser.password_confirmation" :label="__('Confirm password')" type="password" required viewable />
+                        @error('createUser.password_confirmation') <p class="mt-1 text-xs text-red-600 dark:text-red-400"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">

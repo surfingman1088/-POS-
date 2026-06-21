@@ -78,8 +78,7 @@ class Users extends Component
                 },
             ],
             'createUser.password' => [
-                'required', 'string', 'confirmed',
-                Rules\Password::min(8)->mixedCase()->letters()->numbers(),
+                'required', 'string', 'min:6', 'confirmed',
             ],
             'createUser.lang'     => ['required', 'in:en,zh'],
             'createUser.role'     => ['required', 'in:admin,staff'],
