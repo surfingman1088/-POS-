@@ -26,6 +26,7 @@ class Users extends Component
         'password'              => '',
         'password_confirmation' => '',
         'lang'                  => 'en',
+        'role'                  => 'staff',
     ];
 
     public array $users    = [];
@@ -81,13 +82,19 @@ class Users extends Component
                 Rules\Password::min(8)->mixedCase()->letters()->numbers(),
             ],
             'createUser.lang'     => ['required', 'in:en,zh'],
+            'createUser.role'     => ['required', 'in:admin,staff'],
         ]);
 
+        $isStaff = $validated['createUser']['role'] === 'staff';
+
         $account = User::create([
-            'name'     => ucwords($validated['createUser']['name']),
-            'username' => ucwords($validated['createUser']['username']),
-            'password' => Hash::make($validated['createUser']['password']),
-            'lang'     => $validated['createUser']['lang'],
+            'name'                  => ucwords($validated['createUser']['name']),
+            'username'              => ucwords($validated['createUser']['username']),
+            'password'              => Hash::make($validated['createUser']['password']),
+            'lang'                  => $validated['createUser']['lang'],
+            'role'                  => $validated['createUser']['role'],
+            // 員工帳號建立後，強制首次登入修改密碼
+            'must_change_password'  => $isStaff,
         ]);
 
         $auditLogsService->recordAccountCreated(Auth::user(), $account, request());
@@ -203,6 +210,7 @@ class Users extends Component
             'password'              => '',
             'password_confirmation' => '',
             'lang'                  => 'en',
+            'role'                  => 'staff',
         ];
         $this->resetValidation();
     }
@@ -224,13 +232,15 @@ class Users extends Component
         // Serialize every Carbon date → ISO string so Livewire JSON round-trips safely.
         $this->accounts = $auditLogsService->accountSummaries($userId)
             ->map(fn ($a) => [
-                'user_id'       => $a['user']->id,
-                'name'          => $a['user']->name,
-                'username'      => $a['user']->username,
-                'actions_count' => $a['actions_count'],
-                'device_count'  => $a['device_count'],
-                'session_count' => $a['session_count'],
-                'last_login_at' => $a['last_login_at']?->toIso8601String(),
+                'user_id'              => $a['user']->id,
+                'name'                 => $a['user']->name,
+                'username'             => $a['user']->username,
+                'role'                 => $a['user']->role ?? 'admin',
+                'must_change_password' => $a['user']->must_change_password ?? false,
+                'actions_count'        => $a['actions_count'],
+                'device_count'         => $a['device_count'],
+                'session_count'        => $a['session_count'],
+                'last_login_at'        => $a['last_login_at']?->toIso8601String(),
             ])
             ->all();
 

@@ -137,6 +137,22 @@
                                                     <i class="fas fa-circle text-[6px]"></i>{{ __('Offline') }}
                                                 </span>
                                             @endif
+                                            {{-- 角色標籤 --}}
+                                            @if(($account['role'] ?? 'admin') === 'admin')
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                                                    <i class="fas fa-crown text-[9px]"></i>{{ __('Admin') }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
+                                                    <i class="fas fa-user text-[9px]"></i>{{ __('Staff') }}
+                                                </span>
+                                            @endif
+                                            {{-- 待修改密碼標籤 --}}
+                                            @if(!empty($account['must_change_password']))
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-rose-50 dark:bg-rose-900/20 px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:text-rose-300">
+                                                    <i class="fas fa-key text-[9px]"></i>{{ __('Password not set') }}
+                                                </span>
+                                            @endif
                                         </div>
                                         <div class="text-xs text-zinc-500">{{ $account['username'] }}</div>
                                     </div>
@@ -206,6 +222,20 @@
                                     @else
                                         <span class="inline-flex items-center gap-1 rounded-full bg-zinc-50 dark:bg-zinc-800/30 px-2 py-0.5 text-[11px] font-semibold text-zinc-600 dark:text-zinc-300">
                                             <i class="fas fa-circle text-[6px]"></i>{{ __('Offline') }}
+                                        </span>
+                                    @endif
+                                    @if(($account['role'] ?? 'admin') === 'admin')
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                                            <i class="fas fa-crown text-[9px]"></i>{{ __('Admin') }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
+                                            <i class="fas fa-user text-[9px]"></i>{{ __('Staff') }}
+                                        </span>
+                                    @endif
+                                    @if(!empty($account['must_change_password']))
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-rose-50 dark:bg-rose-900/20 px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:text-rose-300">
+                                            <i class="fas fa-key text-[9px]"></i>{{ __('Password not set') }}
                                         </span>
                                     @endif
                                 </div>
@@ -632,7 +662,7 @@
                     <div>
                         <flux:input wire:model="createUser.password_confirmation" :label="__('Confirm password')" type="password" required viewable />
                     </div>
-                    <div class="md:col-span-2">
+                    <div>
                         <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                             {{ __('Language') }}
                         </label>
@@ -641,6 +671,20 @@
                             <option value="en">{{ __('English') }}</option>
                             <option value="zh">{{ __('Chinese') }}</option>
                         </select>
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                            <i class="fas fa-shield-halved mr-1"></i>{{ __('Role') }}
+                        </label>
+                        <select wire:model="createUser.role"
+                                class="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                            <option value="staff">{{ __('Staff') }} — {{ __('Limited access') }}</option>
+                            <option value="admin">{{ __('Admin') }} — {{ __('Full access') }}</option>
+                        </select>
+                        <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            {{ __('Staff accounts will be prompted to set their own password on first login.') }}
+                        </p>
                     </div>
                     <div class="md:col-span-2 mt-2 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                         <flux:button type="button" variant="filled" wire:click="closeCreateModal">{{ __('Cancel') }}</flux:button>

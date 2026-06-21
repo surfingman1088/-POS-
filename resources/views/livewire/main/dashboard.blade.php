@@ -17,6 +17,8 @@
         <div>
             <h3 class="mb-2 text-sm font-semibold tracking-wide uppercase text-zinc-600 dark:text-zinc-300">{{ __('Sales KPIs') }}</h3>
             <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+
+                {{-- 今日營收：所有人可見 --}}
                 <div class="p-5 bg-white border rounded-lg shadow-sm dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700">
                     <div class="flex items-start justify-between">
                         <div>
@@ -31,6 +33,8 @@
                     </div>
                 </div>
 
+                {{-- 月營收：僅管理員可見 --}}
+                @if(auth()->user()->isAdmin())
                 <div class="p-5 bg-white border rounded-lg shadow-sm dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700">
                     <div class="flex items-start justify-between">
                         <div>
@@ -44,6 +48,7 @@
                         <i class="text-lg fas fa-chart-line {{ $revMonthTrend >= 0 ? 'text-emerald-500' : 'text-rose-500' }}"></i>
                     </div>
                 </div>
+                @endif
 
                 <div class="p-5 bg-white border rounded-lg shadow-sm dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700">
                     <div class="flex items-start justify-between">
@@ -131,11 +136,13 @@
         </div>
     </div>
 
-    {{-- Business Health and Operations --}}
+    {{-- Business Health and Operations (管理員專屬) --}}
+    @if(auth()->user()->isAdmin())
     <div class="grid grid-cols-1 gap-3 mb-6 xl:grid-cols-2">
         <div class="p-6 bg-white border rounded-lg shadow-sm dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700">
                 <h3 class="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                 <i class="mr-2 text-emerald-500 fas fa-coins"></i>{{ __('Money & Growth Snapshot') }}
+                <span class="ml-2 text-xs font-normal text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full"><i class="fas fa-lock mr-1"></i>{{ __('Admin Only') }}</span>
             </h3>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div class="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/10">
@@ -146,7 +153,7 @@
                 <div class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/10">
                     <p class="text-xs uppercase text-amber-700 dark:text-amber-300">{{ __('Estimated Profit') }}</p>
                     <p class="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100">₱{{ number_format($businessInsights['month_profit'] ?? 0, 2) }}</p>
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Based on a 25% margin') }}</p>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Based on product cost') }}</p>
                 </div>
                 <div class="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/10">
                     <p class="text-xs uppercase text-blue-700 dark:text-blue-300">{{ __('Average Order Value') }}</p>
@@ -189,6 +196,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Top Selling Products Section --}}
     <div class="grid grid-cols-1 gap-3 mb-6 xl:grid-cols-3">
@@ -211,7 +219,9 @@
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ number_format($product['total_sold'] ?? 0) }} {{ __('sold') }}</p>
+                                @if(auth()->user()->isAdmin())
                                 <p class="text-xs text-zinc-500 dark:text-zinc-400">₱{{ number_format($product['total_revenue'] ?? 0, 2) }}</p>
+                                @endif
                             </div>
                         </div>
                     @endforeach
@@ -243,7 +253,9 @@
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ number_format($product['total_sold'] ?? 0) }} {{ __('units sold') }}</p>
+                                @if(auth()->user()->isAdmin())
                                 <p class="text-xs text-zinc-500 dark:text-zinc-400">₱{{ number_format($product['total_revenue'] ?? 0, 2) }}</p>
+                                @endif
                             </div>
                         </div>
                     @endforeach
@@ -273,7 +285,11 @@
                             </div>
                             <div class="text-right">
                                 <span class="block text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($product['avg_weekly'] ?? 0, 1) }}/{{ __('week') }}</span>
+                                @if(auth()->user()->isAdmin())
                                 <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ number_format($product['total_sold'] ?? 0) }} {{ __('total') }} • ₱{{ number_format($product['total_revenue'] ?? 0, 2) }}</span>
+                                @else
+                                <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ number_format($product['total_sold'] ?? 0) }} {{ __('total') }}</span>
+                                @endif
                             </div>
                         </div>
                     @endforeach
@@ -288,7 +304,8 @@
         </div>
     </div>
 
-    {{-- Descriptive Analytics Chart Section --}}
+    {{-- Descriptive Analytics Chart Section (管理員專屬) --}}
+    @if(auth()->user()->isAdmin())
     <div class="grid grid-cols-1 gap-3 mb-8 lg:grid-cols-2">
 
         {{-- Store Trend --}}
@@ -386,7 +403,7 @@
         </div>
     </div>
 
-    {{-- Insights --}}
+    {{-- Insights (管理員專屬) --}}
     <div class="grid grid-cols-1 gap-3 mb-6 xl:grid-cols-3">
         <div class="p-6 bg-white border rounded-lg shadow-sm dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 xl:col-span-2">
             <h3 class="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
@@ -456,6 +473,7 @@
             </div>
         </div>
     </div>
+    @endif
 
 {{-- Add chart labels for JS --}}
 <script>
@@ -497,3 +515,4 @@
       "Other": "{{ __('Other') }}",
   };
 </script>
+</div>

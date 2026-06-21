@@ -17,10 +17,12 @@ class Product extends Model
         'is_in_stock',
         'category',
         'price',
+        'cost',
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'price'       => 'decimal:2',
+        'cost'        => 'decimal:2',
         'category_id' => 'integer',
         'is_in_stock' => 'boolean',
     ];

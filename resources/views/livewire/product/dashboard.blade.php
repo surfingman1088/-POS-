@@ -226,6 +226,8 @@
     {{-- MODALS --}}
     {{-- Form Modal (create/edit) --}}
     @include('livewire.partials.products.form')
+    {{-- Admin Password Verification Modal --}}
+    @include('livewire.partials.products.admin-password-modal')
 
     {{-- HIDE / ARCHIVE CONFIRM MODAL --}}
     <div x-show="showArchiveModal"

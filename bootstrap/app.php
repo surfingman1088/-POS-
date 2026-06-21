@@ -3,6 +3,7 @@
 use App\Http\Middleware\TrackAuditTrail;
 use App\Http\Middleware\SetLocaleFromSession;
 use App\Http\Middleware\EnsureTemporaryDeviceSession;
+use App\Http\Middleware\EnsurePasswordChanged;
 
 // laravel
 use Illuminate\Foundation\Application;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', SetLocaleFromSession::class);
         $middleware->appendToGroup('web', EnsureTemporaryDeviceSession::class);
         $middleware->appendToGroup('web', TrackAuditTrail::class);
+        $middleware->appendToGroup('web', EnsurePasswordChanged::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

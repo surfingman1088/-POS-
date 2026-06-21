@@ -75,6 +75,17 @@
                     @error('price') <p class="text-red-500 text-xs mt-1"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p> @enderror
                 </div>
 
+                {{-- Cost (Admin only) --}}
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1.5">
+                        <i class="fas fa-dollar-sign mr-1"></i>{{ __('Cost Price') }}
+                        <span class="normal-case font-normal ml-1 text-amber-600 dark:text-amber-400">({{ __('admin only') }})</span>
+                    </label>
+                    <input type="number" step="0.01" wire:model="cost"
+                        class="w-full px-3 py-2 text-sm rounded-xl border border-amber-200 dark:border-amber-700/60 bg-amber-50 dark:bg-amber-900/20 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 transition">
+                    @error('cost') <p class="text-red-500 text-xs mt-1"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p> @enderror
+                </div>
+
                 {{-- Stocks --}}
                 <div>
                     <label class="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1.5">

@@ -7,6 +7,7 @@ use App\Services\Products\InventoryService;
 use App\Services\System\AuditLogsService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -29,10 +30,16 @@ class Dashboard extends Component
 
     public $selectedProductId = null;
 
+    // 管理員密碼驗證 modal 屬性
+    public bool $showAdminPasswordModal = false;
+    public string $adminPasswordInput = '';
+    public string $pendingAdminAction = ''; // 'save_product' | 'delete_product' | 'archive_product'
+
     // Form properties
     public $name = '';
     public $description = '';
     public $price = '';
+    public $cost = 0;
     public $stocks = '';
     public $category = '';
     public $sold = 0;
@@ -68,6 +75,7 @@ class Dashboard extends Component
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'cost' => 'nullable|numeric|min:0',
             'stocks' => 'required|integer|min:0',
             'category' => 'required|exists:product_categories,id',
             'sold' => 'integer|min:0',
@@ -158,6 +166,7 @@ class Dashboard extends Component
             $this->name = $product->name;
             $this->description = $product->description;
             $this->price = $product->price;
+            $this->cost = $product->cost ?? 0;
             $this->stocks = $product->stocks;
             $this->category = $product->category;
             $this->sold = $product->sold;
@@ -230,16 +239,67 @@ class Dashboard extends Component
     /**
      * Single entry point the merged form submits to.
      * Routes to create or update depending on whether we're editing.
+     * 如果是員工角色，修改庫存數量需要管理員密碼驗證。
      */
     public function save(AuditLogsService $audit): void
     {
         $this->normalizeColor();
+
+        // 如果是員工，且正在編輯商品（可能修改庫存），需要管理員密碼驗證
+        if (Auth::user()->isStaff() && $this->selectedProductId) {
+            $product = Product::find($this->selectedProductId);
+            if ($product && (int) $this->stocks !== (int) $product->stocks) {
+                // 庫存數量有變動，要求管理員密碼
+                $this->pendingAdminAction = 'save_product';
+                $this->adminPasswordInput = '';
+                $this->showAdminPasswordModal = true;
+                return;
+            }
+        }
 
         if ($this->selectedProductId) {
             $this->updateProduct($audit);
         } else {
             $this->createProduct($audit);
         }
+    }
+
+    /**
+     * 管理員密碼驗證成功後，執行原本的操作。
+     */
+    public function confirmAdminPassword(AuditLogsService $audit): void
+    {
+        // 找到任一管理員帳號驗證密碼
+        $adminUser = \App\Models\User::where('role', 'admin')->first();
+
+        if (! $adminUser || ! Hash::check($this->adminPasswordInput, $adminUser->password)) {
+            $this->addError('adminPasswordInput', __('Incorrect admin password. Please try again.'));
+            return;
+        }
+
+        $this->showAdminPasswordModal = false;
+        $this->adminPasswordInput = '';
+
+        // 執行原本操作
+        match ($this->pendingAdminAction) {
+            'save_product'    => $this->updateProduct($audit),
+            'delete_product'  => $this->deleteProduct($audit),
+            'archive_product' => $this->archiveProduct($audit),
+            default           => null,
+        };
+
+        $this->pendingAdminAction = '';
+    }
+
+    /**
+     * 關閉管理員密碼驗證 modal。
+     */
+    public function closeAdminPasswordModal(): void
+    {
+        $this->showAdminPasswordModal = false;
+        $this->adminPasswordInput = '';
+        $this->pendingAdminAction = '';
+        $this->resetErrorBag('adminPasswordInput');
     }
 
     public function createProduct(AuditLogsService $audit): void
@@ -252,6 +312,7 @@ class Dashboard extends Component
             'name'        => ucwords(trim($this->name)),
             'description' => trim($this->description),
             'price'       => $this->price,
+            'cost'        => $this->cost ?? 0,
             'stocks'      => $this->stocks,
             'category'    => $this->category,
             'sold'        => $this->sold,
@@ -336,6 +397,7 @@ class Dashboard extends Component
                     'name'        => ucwords(trim($this->name)),
                     'description' => trim($this->description),
                     'price'       => $this->price,
+                    'cost'        => $this->cost ?? 0,
                     'stocks'      => $newStocks,
                     'category'    => $this->category,
                     'sold'        => $this->sold,
@@ -435,6 +497,7 @@ class Dashboard extends Component
         $this->name = '';
         $this->description = '';
         $this->price = '';
+        $this->cost = 0;
         $this->stocks = '';
         $this->category = '';
         $this->sold = 0;
