@@ -10,12 +10,19 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsurePasswordChanged
 {
     /**
-     * 若員工帳號標記為必須修改密碼，強制導向密碼設定頁面。
+     * Force staff to change password on first login.
+     * Livewire AJAX requests must be allowed through,
+     * otherwise the password form submission will be intercepted.
      */
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check() && Auth::user()->must_change_password) {
-            // 允許存取密碼設定頁、登出路由，避免無限重導
+            // Allow Livewire AJAX requests through
+            if ($request->hasHeader('X-Livewire') || str_contains($request->path(), 'livewire')) {
+                return $next($request);
+            }
+
+            // Allow password settings page and logout route
             $allowedRoutes = ['settings.password', 'logout'];
             if (! $request->routeIs(...$allowedRoutes)) {
                 return redirect()->route('settings.password')
