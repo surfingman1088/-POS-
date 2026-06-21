@@ -61,8 +61,12 @@ new #[Layout('components.layouts.auth', ['title' => 'Log In'])] class extends Co
         $auditLogsService->revokeTemporaryDeviceToken(request());
         $auditLogsService->recordLogin(Auth::user(), request());
 
-        if ($this->remember) {
-            $auditLogsService->issueTemporaryDeviceToken(Auth::user(), request());
+        // 員工帳號自動記住裝置；管理員依「記住我」勾選決定
+        $user = Auth::user();
+        $shouldRemember = $this->remember || ($user->role === 'staff');
+
+        if ($shouldRemember) {
+            $auditLogsService->issueTemporaryDeviceToken($user, request());
         }
 
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
@@ -159,6 +163,7 @@ new #[Layout('components.layouts.auth', ['title' => 'Log In'])] class extends Co
         {{-- Remember Me & Forgot Password --}}
         <div class="relative">
             <flux:checkbox wire:model="remember" :label="__('Remember me')" class="cursor-pointer"/>
+            <p class="text-xs text-zinc-400 mt-1">{{ __("Staff accounts are remembered automatically.") }}</p>
             @if (Route::has('password.request'))
                 <flux:link class="absolute end-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
                     {{ __('Forgot your password?') }}
