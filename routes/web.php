@@ -48,9 +48,11 @@ Route::middleware(['auth'])->group(function () {
     // Customers route
     Volt::route('customers', 'customer.dashboard')->name('customers');
 
-    // Employee route
-    Volt::route('employees', 'employee.dashboard')->name('employees');
-    Volt::route('employees/archived', 'employee.archive')->name('employees.archived');
+    // Employee route — 僅管理員可存取
+    Route::middleware(['admin.only'])->group(function () {
+        Volt::route('employees', 'employee.dashboard')->name('employees');
+        Volt::route('employees/archived', 'employee.archive')->name('employees.archived');
+    });
 
     // Logs and Audits
     Route::get('logs', \App\Livewire\Logs\Log::class)->name('logs');

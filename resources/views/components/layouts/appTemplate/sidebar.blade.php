@@ -59,13 +59,13 @@
                 {{-- management nav group --}}
                 <flux:navlist.group :heading="__('Management')" class="grid mt-2.5">
                     {{-- customers --}}
-                    <flux:navlist.item icon="identification" :href="route('customers')" :current="$customersCurrent" wire:navigate>{{ __('Customers') }}</flux:navlist.item>
-
-                    {{-- employees --}}
-                    <flux:navlist.item icon="users" :href="route('employees')" :current="$employeesCurrent" wire:navigate>{{ __('Employees') }}</flux:navlist.item>
+                    <flux:navlist.item icon="identification" :href="route('customers')" :current="$customersCurrent" wire:navigate>{{ __("Customers") }}</flux:navlist.item>
 
                     {{-- 以下項目僅管理員可見 --}}
                     @if(Auth::check() && Auth::user()->isAdmin())
+                    {{-- employees --}}
+                    <flux:navlist.item icon="users" :href="route('employees')" :current="$employeesCurrent" wire:navigate>{{ __("Employees") }}</flux:navlist.item>
+
                     {{-- Discount Presets --}}
                     <flux:navlist.item icon="receipt-percent" :href="route('presets.discounts')" :current="request()->routeIs('presets.discounts')" wire:navigate>{{ __('Discount Presets') }}</flux:navlist.item>
 

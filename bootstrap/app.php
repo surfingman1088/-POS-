@@ -4,6 +4,7 @@ use App\Http\Middleware\TrackAuditTrail;
 use App\Http\Middleware\SetLocaleFromSession;
 use App\Http\Middleware\EnsureTemporaryDeviceSession;
 use App\Http\Middleware\EnsurePasswordChanged;
+use App\Http\Middleware\EnsureAdminOnly;
 
 // laravel
 use Illuminate\Foundation\Application;
@@ -25,6 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', EnsureTemporaryDeviceSession::class);
         $middleware->appendToGroup('web', TrackAuditTrail::class);
         $middleware->appendToGroup('web', EnsurePasswordChanged::class);
+        // 註冊 admin-only 中間件別名
+        $middleware->alias([
+            'admin.only' => EnsureAdminOnly::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
