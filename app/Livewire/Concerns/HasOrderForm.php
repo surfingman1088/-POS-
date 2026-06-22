@@ -475,7 +475,7 @@ trait HasOrderForm
     {
         $this->productName        = '';
         $this->productDescription = '';
-        $this->productCategory    = 'other';
+        $this->productCategory    = '';
         $this->productStocks      = 1;
         $this->productPrice       = 0;
     }
@@ -485,7 +485,7 @@ trait HasOrderForm
         $this->validate([
             'productName'        => 'required|string|max:255',
             'productDescription' => 'nullable|string',
-            'productCategory'    => 'required|string|max:255',
+            'productCategory'    => 'required|integer|exists:product_categories,id',
             'productStocks'      => 'required|integer|min:0',
             'productPrice'       => 'required|numeric|min:0',
         ]);

@@ -96,42 +96,44 @@
 
             {{-- Actions --}}
             <div class="flex items-center gap-1.5 pt-1 border-t border-zinc-100 dark:border-zinc-700 flex-wrap">
-
-                {{-- Availability toggle --}}
-                @if($product->is_in_stock)
-                    <button @click="openArchiveModal({{ $product->id }})"
-                        class="prod-card-btn text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/20">
-                        <i class="fas fa-eye-slash"></i>{{ __('Hide') }}
+                @if(auth()->check() && auth()->user()->isAdmin())
+                    {{-- Availability toggle (admin only) --}}
+                    @if($product->is_in_stock)
+                        <button @click="openArchiveModal({{ $product->id }})"
+                            class="prod-card-btn text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/20">
+                            <i class="fas fa-eye-slash"></i>{{ __('Hide') }}
+                        </button>
+                    @elseif($isOutOfStock)
+                        <span class="prod-card-btn text-zinc-400 cursor-not-allowed opacity-60"
+                                title="{{ __('This product is out of stock. Edit to add more stocks.') }}">
+                            <i class="fas fa-ban"></i>{{ __('Out Of Stock') }}
+                        </span>
+                    @else
+                        <button wire:click="makeAvailable({{ $product->id }})"
+                            class="prod-card-btn text-orange-600 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-900/20">
+                            <i class="fas fa-eye"></i>{{ __('Show') }}
+                        </button>
+                    @endif
+                    {{-- Edit (admin only) --}}
+                    <button @click="openEditModal({{ $product->id }})"
+                        class="prod-card-btn text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20">
+                        <i class="fas fa-edit"></i>{{ __('Edit') }}
                     </button>
-                @elseif($isOutOfStock)
-                    <span class="prod-card-btn text-zinc-400 cursor-not-allowed opacity-60"
-                            title="{{ __('This product is out of stock. Edit to add more stocks.') }}">
-                        <i class="fas fa-ban"></i>{{ __('Out Of Stock') }}
-                    </span>
+                    {{-- Delete (admin only) --}}
+                    @if(($product->order_items_count ?? 0) === 0)
+                        <button @click="openDeleteModal({{ $product->id }})"
+                            class="prod-card-btn text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 ml-auto">
+                            <i class="fas fa-trash"></i>{{ __('Delete') }}
+                        </button>
+                    @else
+                        <span class="prod-card-btn text-zinc-400 opacity-60 cursor-not-allowed ml-auto"
+                                title="{{ __('Cannot delete - has ongoing order') }}">
+                            <i class="fas fa-ban"></i>{{ __('Pending') }}
+                        </span>
+                    @endif
                 @else
-                    <button wire:click="makeAvailable({{ $product->id }})"
-                        class="prod-card-btn text-orange-600 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-900/20">
-                        <i class="fas fa-eye"></i>{{ __('Show') }}
-                    </button>
-                @endif
-
-                {{-- Edit --}}
-                <button @click="openEditModal({{ $product->id }})"
-                    class="prod-card-btn text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20">
-                    <i class="fas fa-edit"></i>{{ __('Edit') }}
-                </button>
-
-                {{-- Delete --}}
-                @if(($product->order_items_count ?? 0) === 0)
-                    <button @click="openDeleteModal({{ $product->id }})"
-                        class="prod-card-btn text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 ml-auto">
-                        <i class="fas fa-trash"></i>{{ __('Delete') }}
-                    </button>
-                @else
-                    <span class="prod-card-btn text-zinc-400 opacity-60 cursor-not-allowed ml-auto"
-                            title="{{ __('Cannot delete - has ongoing order') }}">
-                        <i class="fas fa-ban"></i>{{ __('Pending') }}
-                    </span>
+                    {{-- Staff: view only --}}
+                    <span class="text-xs text-zinc-400 italic px-1">{{ __('View Only') }}</span>
                 @endif
             </div>
         </div>

@@ -175,52 +175,54 @@
                         {{-- Actions --}}
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-center gap-1">
-
-                                {{-- Availability toggle --}}
-                                @if($product->is_in_stock)
-                                    <button @click="openArchiveModal({{ $product->id }})"
-                                        class="tbl-action-btn text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/20"
-                                        title="{{ __('This Item is Currently for Sale - Mark as Unavailable') }}">
-                                        <i class="fas fa-eye-slash text-sm"></i>
-                                        <span class="text-xs">{{ __('Hide') }}</span>
+                                @if(auth()->check() && auth()->user()->isAdmin())
+                                    {{-- Availability toggle (admin only) --}}
+                                    @if($product->is_in_stock)
+                                        <button @click="openArchiveModal({{ $product->id }})"
+                                            class="tbl-action-btn text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/20"
+                                            title="{{ __('This Item is Currently for Sale - Mark as Unavailable') }}">
+                                            <i class="fas fa-eye-slash text-sm"></i>
+                                            <span class="text-xs">{{ __('Hide') }}</span>
+                                        </button>
+                                    @elseif($isOutOfStock)
+                                        <span class="tbl-action-btn text-zinc-400 opacity-50 cursor-not-allowed"
+                                                title="{{ __('This product is out of stock. Edit to add more stocks.') }}">
+                                            <i class="fas fa-ban text-sm"></i>
+                                            <span class="text-xs leading-tight">{{ __('Out of Stock') }}</span>
+                                        </span>
+                                    @else
+                                        <button wire:click="makeAvailable({{ $product->id }})"
+                                            class="tbl-action-btn text-orange-600 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-900/20"
+                                            title="{{ __('This Item is Currently Hidden - Make Available for Sale') }}">
+                                            <i class="fas fa-eye text-sm"></i>
+                                            <span class="text-xs">{{ __('Show') }}</span>
+                                        </button>
+                                    @endif
+                                    {{-- Edit (admin only) --}}
+                                    <button @click="openEditModal({{ $product->id }})"
+                                        class="tbl-action-btn text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                                        title="{{ __('Edit Product') }}">
+                                        <i class="fas fa-edit text-sm"></i>
+                                        <span class="text-xs">{{ __('Edit') }}</span>
                                     </button>
-                                @elseif($isOutOfStock)
-                                    <span class="tbl-action-btn text-zinc-400 opacity-50 cursor-not-allowed"
-                                            title="{{ __('This product is out of stock. Edit to add more stocks.') }}">
-                                        <i class="fas fa-ban text-sm"></i>
-                                        <span class="text-xs leading-tight">{{ __('Out of Stock') }}</span>
-                                    </span>
+                                    {{-- Delete (admin only) --}}
+                                    @if(($product->order_items_count ?? 0) === 0)
+                                        <button @click="openDeleteModal({{ $product->id }})"
+                                            class="tbl-action-btn text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                                            title="{{ __('Delete Permanently. This action cannot be undone.') }}">
+                                            <i class="fas fa-trash text-sm"></i>
+                                            <span class="text-xs">{{ __('Delete') }}</span>
+                                        </button>
+                                    @else
+                                        <span class="tbl-action-btn text-zinc-400 opacity-50 cursor-not-allowed"
+                                                title="{{ __('Cannot delete - has ongoing order') }}">
+                                            <i class="fas fa-ban text-sm"></i>
+                                            <span class="text-xs">{{ __('Pending') }}</span>
+                                        </span>
+                                    @endif
                                 @else
-                                    <button wire:click="makeAvailable({{ $product->id }})"
-                                        class="tbl-action-btn text-orange-600 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-900/20"
-                                        title="{{ __('This Item is Currently Hidden - Make Available for Sale') }}">
-                                        <i class="fas fa-eye text-sm"></i>
-                                        <span class="text-xs">{{ __('Show') }}</span>
-                                    </button>
-                                @endif
-
-                                {{-- Edit --}}
-                                <button @click="openEditModal({{ $product->id }})"
-                                    class="tbl-action-btn text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
-                                    title="{{ __('Edit Product') }}">
-                                    <i class="fas fa-edit text-sm"></i>
-                                    <span class="text-xs">{{ __('Edit') }}</span>
-                                </button>
-
-                                {{-- Delete --}}
-                                @if(($product->order_items_count ?? 0) === 0)
-                                    <button @click="openDeleteModal({{ $product->id }})"
-                                        class="tbl-action-btn text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-                                        title="{{ __('Delete Permanently. This action cannot be undone.') }}">
-                                        <i class="fas fa-trash text-sm"></i>
-                                        <span class="text-xs">{{ __('Delete') }}</span>
-                                    </button>
-                                @else
-                                    <span class="tbl-action-btn text-zinc-400 opacity-50 cursor-not-allowed"
-                                            title="{{ __('Cannot delete - has ongoing order') }}">
-                                        <i class="fas fa-ban text-sm"></i>
-                                        <span class="text-xs">{{ __('Pending') }}</span>
-                                    </span>
+                                    {{-- Staff: view only --}}
+                                    <span class="text-xs text-zinc-400 italic px-2">{{ __('View Only') }}</span>
                                 @endif
                             </div>
                         </td>

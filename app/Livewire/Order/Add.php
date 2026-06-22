@@ -60,7 +60,7 @@ class Add extends Component
     public ?int         $productTargetIndex = null;
     public string       $productName        = '';
     public string       $productDescription = '';
-    public string       $productCategory    = 'other';
+    public mixed        $productCategory    = '';
     public string|int   $productStocks      = 1;
     public string|float $productPrice       = 0;
     public string       $defaultPaymentType  = 'cash';

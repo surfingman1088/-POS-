@@ -47,6 +47,7 @@
                 {{ __('Category') }} <span class="text-red-500 normal-case font-normal">*</span>
             </label>
             <select wire:model="productCategory" class="{{ $inputClass }}">
+                <option value="">{{ __('-- Select Category --') }}</option>
                 @foreach(\App\Models\Product::getCategories() as $key => $category)
                     <option value="{{ $key }}">{{ $category }}</option>
                 @endforeach

@@ -290,14 +290,18 @@
 
                     {{-- Actions --}}
                     <div class="flex items-center gap-1.5 pt-1 border-t border-zinc-100 dark:border-zinc-700">
-                        <button @click="openEditModal({{ $employee->id }})"
-                            class="emp-card-btn text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20">
-                            <i class="fas fa-edit"></i>{{ __('Edit') }}
-                        </button>
-                        <button @click="openDeleteModal({{ $employee->id }})"
-                            class="emp-card-btn text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 ml-auto">
-                            <i class="fas fa-archive"></i>{{ __('Archive') }}
-                        </button>
+                        @if(auth()->check() && auth()->user()->isAdmin())
+                            <button @click="openEditModal({{ $employee->id }})"
+                                class="emp-card-btn text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20">
+                                <i class="fas fa-edit"></i>{{ __('Edit') }}
+                            </button>
+                            <button @click="openDeleteModal({{ $employee->id }})"
+                                class="emp-card-btn text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 ml-auto">
+                                <i class="fas fa-archive"></i>{{ __('Archive') }}
+                            </button>
+                        @else
+                            <span class="text-xs text-zinc-400 italic px-1">{{ __('View Only') }}</span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -424,16 +428,20 @@
 
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-center gap-1">
-                                    <button @click="openEditModal({{ $employee->id }})"
-                                        class="tbl-action-btn text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20">
-                                        <i class="fas fa-edit text-sm"></i>
-                                        <span class="text-xs">{{ __('Edit') }}</span>
-                                    </button>
-                                    <button @click="openDeleteModal({{ $employee->id }})"
-                                        class="tbl-action-btn text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
-                                        <i class="fas fa-archive text-sm"></i>
-                                        <span class="text-xs">{{ __('Archive') }}</span>
-                                    </button>
+                                    @if(auth()->check() && auth()->user()->isAdmin())
+                                        <button @click="openEditModal({{ $employee->id }})"
+                                            class="tbl-action-btn text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20">
+                                            <i class="fas fa-edit text-sm"></i>
+                                            <span class="text-xs">{{ __('Edit') }}</span>
+                                        </button>
+                                        <button @click="openDeleteModal({{ $employee->id }})"
+                                            class="tbl-action-btn text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
+                                            <i class="fas fa-archive text-sm"></i>
+                                            <span class="text-xs">{{ __('Archive') }}</span>
+                                        </button>
+                                    @else
+                                        <span class="text-xs text-zinc-400 italic px-2">{{ __('View Only') }}</span>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
