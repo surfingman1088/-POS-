@@ -57,26 +57,6 @@
                         </div>
                     </th>
 
-                    {{-- Products Stocks (Admin only) --}}
-                    @if(auth()->check() && auth()->user()->isAdmin())
-                    <th wire:click="sortByField('stocks')"
-                        class="px-4 py-3 text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 select-none">
-                        <div class="flex items-center justify-center gap-1">
-                            {{ __('Stock') }}
-                            @if($sortBy === 'stocks')
-                                <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} text-blue-500"></i>
-                            @else
-                                <i class="fas fa-sort text-zinc-300 dark:text-zinc-600"></i>
-                            @endif
-                        </div>
-                    </th>
-
-                    {{-- Status (Admin only) --}}
-                    <th class="px-4 py-3 text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        {{ __('Status') }}
-                    </th>
-                    @endif
-
                     {{-- Actions --}}
                     <th class="px-4 py-3 text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         {{ __('Actions') }}
@@ -93,7 +73,6 @@
                             : ($product->stock_status === 'low_stock' ? '#fbbf24'
                             : ($product->is_in_stock ? '#22c55e' : '#fb923c'));
                         $productColor  = $product->color ?? null;
-                        $isStaff       = auth()->check() && auth()->user()->isStaff();
                     @endphp
                     <tr wire:key="product-row-{{ $product->id }}-{{ $categoryFilter }}-{{ $stockFilter }}-{{ $search }}-{{ $index }}"
                         class="transition hover:brightness-95 {{ $productColor ? 'bg-(--row-color)/10' : 'bg-gray-200 dark:bg-zinc-800' }}"
@@ -143,39 +122,6 @@
                                 <i class="fas fa-chart-bar mr-1 opacity-70"></i>{{ $product->sold }}
                             </span>
                         </td>
-
-                        {{-- Stocks + Status (Admin only) --}}
-                        @if(auth()->check() && auth()->user()->isAdmin())
-                        <td class="px-4 py-3 text-center">
-                            <span class="text-sm font-semibold
-                                {{ $isOutOfStock ? 'text-red-600 dark:text-red-400'
-                                    : ($product->stock_status === 'low_stock' ? 'text-yellow-600 dark:text-yellow-400'
-                                    : 'text-zinc-900 dark:text-zinc-100') }}">
-                                <i class="fas fa-cubes mr-1 opacity-60"></i>{{ $product->stocks }}
-                            </span>
-                        </td>
-
-                        {{-- Status --}}
-                        <td class="px-4 py-3 text-center">
-                            @if($isOutOfStock)
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
-                                    <i class="fas fa-times-circle"></i>{{ __('Out of Stock') }}
-                                </span>
-                            @elseif(!$product->is_in_stock)
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
-                                    <i class="fas fa-ban"></i>{{ __('Hidden') }}
-                                </span>
-                            @elseif($product->stock_status === 'low_stock')
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                                    <i class="fas fa-exclamation-triangle"></i>{{ __('Low Stock') }}
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                                    <i class="fas fa-check-circle"></i>{{ __('In Stock') }}
-                                </span>
-                            @endif
-                        </td>
-                        @endif
 
                         {{-- Actions --}}
                         <td class="px-4 py-3">
@@ -239,7 +185,7 @@
                     </tr>
                 @empty
                     <tr wire:key="no-products-{{ $categoryFilter }}-{{ $stockFilter }}-{{ $search }}">
-                        <td colspan="{{ auth()->check() && auth()->user()->isAdmin() ? 8 : 6 }}" class="px-6 py-20 text-center">
+                        <td colspan="6" class="px-6 py-20 text-center">
                             <div class="flex flex-col items-center text-zinc-400 dark:text-zinc-500">
                                 <i class="fas fa-box-open text-5xl mb-4 opacity-40"></i>
                                 <p class="text-sm font-medium">{{ __('No products found.') }}</p>

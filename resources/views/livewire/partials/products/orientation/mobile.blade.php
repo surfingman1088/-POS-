@@ -7,10 +7,7 @@
     @php
         $isOutOfStock = empty($product->stocks) || (int)$product->stocks === 0;
         $catLabel = $categoryNames[$product->category] ?? __('Uncategorized');
-        $isStaff  = auth()->check() && auth()->user()->isStaff();
 
-        // Same status → color mapping drives the mobile top strip
-        // AND the desktop inset accent, so both read identically.
         $statusColor = $isOutOfStock ? '#f87171'
             : ($product->stock_status === 'low_stock' ? '#fbbf24'
             : ($product->is_in_stock ? '#22c55e' : '#fb923c'));
@@ -56,48 +53,17 @@
                 </span>
             </div>
 
-            {{-- Stats row --}}
-            <div class="grid grid-cols-{{ $isStaff ? '2' : '3' }} gap-2">
+            {{-- Stats row: Price + Sold only --}}
+            <div class="grid grid-cols-2 gap-2">
                 <div class="bg-zinc-50 dark:bg-zinc-700/80 rounded-xl px-3 py-2 text-center">
                     <p class="text-xs text-zinc-400 dark:text-zinc-500">{{ __('Price') }}</p>
                     <p class="text-sm font-bold text-zinc-900 dark:text-zinc-100">₱{{ number_format($product->price, 2) }}</p>
                 </div>
-                @if(!$isStaff)
-                <div class="bg-zinc-50 dark:bg-zinc-700/80 rounded-xl px-3 py-2 text-center">
-                    <p class="text-xs text-zinc-400 dark:text-zinc-500">{{ __('Stock') }}</p>
-                    <p class="text-sm font-bold {{ $isOutOfStock ? 'text-red-600 dark:text-red-400' : ($product->stock_status === 'low_stock' ? 'text-yellow-600 dark:text-yellow-400' : 'text-zinc-900 dark:text-zinc-100') }}">
-                        {{ $product->stocks }}
-                    </p>
-                </div>
-                @endif
                 <div class="bg-zinc-50 dark:bg-zinc-700/80 rounded-xl px-3 py-2 text-center">
                     <p class="text-xs text-zinc-400 dark:text-zinc-500">{{ __('Sold') }}</p>
                     <p class="text-sm font-bold text-green-600 dark:text-green-400">{{ $product->sold }}</p>
                 </div>
             </div>
-
-            {{-- Status badge (Admin only) --}}
-            @if(!$isStaff)
-            <div>
-                @if($isOutOfStock)
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
-                        <i class="fas fa-times-circle"></i>{{ __('Out of Stock') }}
-                    </span>
-                @elseif(!$product->is_in_stock)
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
-                        <i class="fas fa-ban"></i>{{ __('Hidden') }}
-                    </span>
-                @elseif($product->stock_status === 'low_stock')
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                        <i class="fas fa-exclamation-triangle"></i>{{ __('Low Stock') }}
-                    </span>
-                @else
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                        <i class="fas fa-check-circle"></i>{{ __('In Stock') }}
-                    </span>
-                @endif
-            </div>
-            @endif
 
             {{-- Actions --}}
             <div class="flex items-center gap-1.5 pt-1 border-t border-zinc-100 dark:border-zinc-700 flex-wrap">
