@@ -35,6 +35,13 @@ class Dashboard extends Component
     public string $adminPasswordInput = '';
     public string $pendingAdminAction = ''; // 'save_product' | 'delete_product' | 'archive_product'
 
+    // Staff 快速入庫屬性
+    public bool $showRestockModal = false;
+    public ?int $restockProductId = null;
+    public string $restockProductName = '';
+    public int $restockCurrentStock = 0;
+    public string|int $restockQty = '';
+
     // Form properties
     public $name = '';
     public $description = '';
@@ -428,6 +435,91 @@ class Dashboard extends Component
         $this->dispatch('show-success', ['message' => __('Product :name updated successfully!', ['name' => $this->name])]);
         $this->dispatch('close-form-modal');
         $this->resetForm();
+    }
+
+    /**
+     * Staff 開啟入庫 modal
+     */
+    public function openRestockModal(int $productId): void
+    {
+        $product = Product::find($productId);
+        if (! $product) {
+            $this->dispatch('show-error', ['message' => __('Product not found!')]);
+            return;
+        }
+        $this->restockProductId   = $product->id;
+        $this->restockProductName = $product->name;
+        $this->restockCurrentStock = (int) $product->stocks;
+        $this->restockQty         = '';
+        $this->showRestockModal    = true;
+        $this->resetErrorBag('restockQty');
+    }
+
+    /**
+     * Staff 確認入庫
+     */
+    public function confirmRestock(InventoryService $inventory, AuditLogsService $audit): void
+    {
+        $this->validate([
+            'restockQty' => 'required|integer|min:1|max:9999',
+        ], [
+            'restockQty.required' => __('Please enter the quantity to add.'),
+            'restockQty.integer'  => __('Quantity must be a whole number.'),
+            'restockQty.min'      => __('Quantity must be at least 1.'),
+            'restockQty.max'      => __('Quantity cannot exceed 9999.'),
+        ]);
+
+        $product = Product::find($this->restockProductId);
+        if (! $product) {
+            $this->dispatch('show-error', ['message' => __('Product not found!')]);
+            $this->closeRestockModal();
+            return;
+        }
+
+        $qty = (int) $this->restockQty;
+
+        DB::transaction(function () use ($product, $qty, $inventory, $audit) {
+            $oldStocks = (int) $product->stocks;
+            $inventory->restore(
+                (int) $product->id,
+                $qty,
+                'restock',
+                $product,
+                __('Staff restock from product dashboard.'),
+                Auth::id()
+            );
+            $product->refresh();
+            $audit->recordProductStockAdjusted(
+                Auth::user(),
+                $product,
+                $oldStocks,
+                (int) $product->stocks,
+                'manual',
+                request()
+            );
+        });
+
+        $this->dispatch('show-success', [
+            'message' => __('Added :qty units to :name. New stock: :new', [
+                'qty'  => $qty,
+                'name' => $product->name,
+                'new'  => $product->fresh()->stocks,
+            ]),
+        ]);
+        $this->closeRestockModal();
+    }
+
+    /**
+     * 關閉入庫 modal
+     */
+    public function closeRestockModal(): void
+    {
+        $this->showRestockModal  = false;
+        $this->restockProductId  = null;
+        $this->restockProductName = '';
+        $this->restockCurrentStock = 0;
+        $this->restockQty        = '';
+        $this->resetErrorBag('restockQty');
     }
 
     public function makeAvailable(int $productId, AuditLogsService $audit): void

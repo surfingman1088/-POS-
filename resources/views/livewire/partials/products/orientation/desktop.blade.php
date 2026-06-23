@@ -57,7 +57,8 @@
                         </div>
                     </th>
 
-                    {{-- Products Stocks --}}
+                    {{-- Products Stocks (Admin only) --}}
+                    @if(auth()->check() && auth()->user()->isAdmin())
                     <th wire:click="sortByField('stocks')"
                         class="px-4 py-3 text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 select-none">
                         <div class="flex items-center justify-center gap-1">
@@ -70,10 +71,11 @@
                         </div>
                     </th>
 
-                    {{-- Status --}}
+                    {{-- Status (Admin only) --}}
                     <th class="px-4 py-3 text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         {{ __('Status') }}
                     </th>
+                    @endif
 
                     {{-- Actions --}}
                     <th class="px-4 py-3 text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
@@ -91,6 +93,7 @@
                             : ($product->stock_status === 'low_stock' ? '#fbbf24'
                             : ($product->is_in_stock ? '#22c55e' : '#fb923c'));
                         $productColor  = $product->color ?? null;
+                        $isStaff       = auth()->check() && auth()->user()->isStaff();
                     @endphp
                     <tr wire:key="product-row-{{ $product->id }}-{{ $categoryFilter }}-{{ $stockFilter }}-{{ $search }}-{{ $index }}"
                         class="transition hover:brightness-95 {{ $productColor ? 'bg-(--row-color)/10' : 'bg-gray-200 dark:bg-zinc-800' }}"
@@ -141,7 +144,8 @@
                             </span>
                         </td>
 
-                        {{-- Stocks --}}
+                        {{-- Stocks + Status (Admin only) --}}
+                        @if(auth()->check() && auth()->user()->isAdmin())
                         <td class="px-4 py-3 text-center">
                             <span class="text-sm font-semibold
                                 {{ $isOutOfStock ? 'text-red-600 dark:text-red-400'
@@ -171,6 +175,7 @@
                                 </span>
                             @endif
                         </td>
+                        @endif
 
                         {{-- Actions --}}
                         <td class="px-4 py-3">
@@ -221,18 +226,23 @@
                                         </span>
                                     @endif
                                 @else
-                                    {{-- Staff: view only --}}
-                                    <span class="text-xs text-zinc-400 italic px-2">{{ __('View Only') }}</span>
+                                    {{-- Staff: 入庫按鈕 --}}
+                                    <button wire:click="openRestockModal({{ $product->id }})"
+                                        class="tbl-action-btn text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+                                        title="{{ __('Add Stock') }}">
+                                        <i class="fas fa-plus-circle text-sm"></i>
+                                        <span class="text-xs">{{ __('Restock') }}</span>
+                                    </button>
                                 @endif
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr wire:key="no-products-{{ $categoryFilter }}-{{ $stockFilter }}-{{ $search }}">
-                        <td colspan="8" class="px-6 py-20 text-center">
+                        <td colspan="{{ auth()->check() && auth()->user()->isAdmin() ? 8 : 6 }}" class="px-6 py-20 text-center">
                             <div class="flex flex-col items-center text-zinc-400 dark:text-zinc-500">
                                 <i class="fas fa-box-open text-5xl mb-4 opacity-40"></i>
-                                <p class="text-sm">{{ __('No products found.') }}</p>
+                                <p class="text-sm font-medium">{{ __('No products found.') }}</p>
                                 <p class="text-xs mt-1 opacity-70">{{ __('Try adjusting your search or filter criteria.') }}</p>
                             </div>
                         </td>
@@ -242,10 +252,10 @@
         </table>
     </div>
 
-    {{-- Pagination --}}
-    @if($products->hasPages())
-        <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-700">
+    {{-- Desktop pagination --}}
+    <div class="hidden lg:block px-4 py-3 border-t border-zinc-100 dark:border-zinc-700">
+        @if($products->hasPages())
             {{ $products->links() }}
-        </div>
-    @endif
+        @endif
+    </div>
 </div>

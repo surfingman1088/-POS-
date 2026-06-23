@@ -7,6 +7,7 @@
     @php
         $isOutOfStock = empty($product->stocks) || (int)$product->stocks === 0;
         $catLabel = $categoryNames[$product->category] ?? __('Uncategorized');
+        $isStaff  = auth()->check() && auth()->user()->isStaff();
 
         // Same status → color mapping drives the mobile top strip
         // AND the desktop inset accent, so both read identically.
@@ -56,24 +57,27 @@
             </div>
 
             {{-- Stats row --}}
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-{{ $isStaff ? '2' : '3' }} gap-2">
                 <div class="bg-zinc-50 dark:bg-zinc-700/80 rounded-xl px-3 py-2 text-center">
                     <p class="text-xs text-zinc-400 dark:text-zinc-500">{{ __('Price') }}</p>
                     <p class="text-sm font-bold text-zinc-900 dark:text-zinc-100">₱{{ number_format($product->price, 2) }}</p>
                 </div>
+                @if(!$isStaff)
                 <div class="bg-zinc-50 dark:bg-zinc-700/80 rounded-xl px-3 py-2 text-center">
                     <p class="text-xs text-zinc-400 dark:text-zinc-500">{{ __('Stock') }}</p>
                     <p class="text-sm font-bold {{ $isOutOfStock ? 'text-red-600 dark:text-red-400' : ($product->stock_status === 'low_stock' ? 'text-yellow-600 dark:text-yellow-400' : 'text-zinc-900 dark:text-zinc-100') }}">
                         {{ $product->stocks }}
                     </p>
                 </div>
+                @endif
                 <div class="bg-zinc-50 dark:bg-zinc-700/80 rounded-xl px-3 py-2 text-center">
                     <p class="text-xs text-zinc-400 dark:text-zinc-500">{{ __('Sold') }}</p>
                     <p class="text-sm font-bold text-green-600 dark:text-green-400">{{ $product->sold }}</p>
                 </div>
             </div>
 
-            {{-- Status badge --}}
+            {{-- Status badge (Admin only) --}}
+            @if(!$isStaff)
             <div>
                 @if($isOutOfStock)
                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
@@ -93,6 +97,7 @@
                     </span>
                 @endif
             </div>
+            @endif
 
             {{-- Actions --}}
             <div class="flex items-center gap-1.5 pt-1 border-t border-zinc-100 dark:border-zinc-700 flex-wrap">
@@ -132,8 +137,11 @@
                         </span>
                     @endif
                 @else
-                    {{-- Staff: view only --}}
-                    <span class="text-xs text-zinc-400 italic px-1">{{ __('View Only') }}</span>
+                    {{-- Staff: 入庫按鈕 --}}
+                    <button wire:click="openRestockModal({{ $product->id }})"
+                        class="prod-card-btn text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20">
+                        <i class="fas fa-plus-circle"></i>{{ __('Restock') }}
+                    </button>
                 @endif
             </div>
         </div>
