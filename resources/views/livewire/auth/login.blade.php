@@ -105,32 +105,6 @@ new #[Layout('components.layouts.auth', ['title' => 'Log In'])] class extends Co
 
 <div class="flex flex-col gap-2">
 
-    <div class="text-center">
-        <div onclick="window.location.href='/'"  class="cursor-pointer app-bg-gradient rounded-xl p-6 mb-1">
-            @if (env('STORE_NAME_ALT'))
-                <h1 class="text-5xl font-bold app-text tracking-wider">
-                    {{ env('STORE_NAME_ALT') }}
-                </h1>
-
-                <p class="app-text text-xl font-semibold">
-                    {{ env('STORE_NAME') }}
-                </p>
-
-                <small class="app-text">
-                    {{ env('STORE_ADDRESS') }}
-                </small>
-
-            @else
-                <h1 class="text-5xl font-bold app-text tracking-wider">
-                    {{ env('STORE_NAME') }}
-                </h1>
-                <small class="app-text">
-                    {{ env('STORE_ADDRESS') }}
-                </small>
-            @endif
-        </div>
-    </div>
-
     <x-auth-header :title="__('Welcome Back')" :description="__('Please enter your email and password below to log in')" />
 
     {{-- Session Status --}}

@@ -1,9 +1,9 @@
 /* color variables */
 :root {
-    --color-bg: #B22222;
-    --color-bg-secondary: #8B0000;
-    --color-bg-gradient: linear-gradient(to right, #B22222, #8B0000);
-    --color-text: #FFD700;
+    --color-bg: #f97316;
+    --color-bg-secondary: #ea580c;
+    --color-bg-gradient: linear-gradient(135deg, #f97316, #ea580c);
+    --color-text: #ffffff;
 }
 
 /* system background */
@@ -15,12 +15,10 @@
     background: var(--color-bg-gradient);
 }
 
-
 /* system text */
 .app-text {
     color: var(--color-text);
 }
-
 
 /* buttons */
 .app-btn {
@@ -29,7 +27,119 @@
 }
 
 .app-btn-alt {
-    background-color: var(--color-bg);
+    background: var(--color-bg-gradient);
     color: var(--color-text);
+    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.35);
+    transition: all 0.2s;
 }
 
+.app-btn-alt:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(249, 115, 22, 0.45);
+}
+
+/* =============================================
+   登入頁面 - 設計 B（左右分割明亮風）
+   ============================================= */
+
+/* 覆蓋 auth layout 背景 */
+body.auth-page {
+    background: #fff8f3 !important;
+}
+
+/* 左右分割容器 */
+.login-split-wrapper {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* 左側橘色品牌區 */
+.login-left-panel {
+    width: 42%;
+    background: linear-gradient(160deg, #f97316 0%, #ea580c 45%, #9a3412 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-left-panel::before {
+    content: '';
+    position: absolute;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    border: 60px solid rgba(255,255,255,0.07);
+    top: -130px; right: -130px;
+    pointer-events: none;
+}
+
+.login-left-panel::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    border: 50px solid rgba(255,255,255,0.06);
+    bottom: -90px; left: -90px;
+    pointer-events: none;
+}
+
+.login-brand-logo {
+    width: 80px; height: 80px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 22px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    border: 2px solid rgba(255,255,255,0.25);
+}
+
+.login-brand-name {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 0.06em;
+    text-align: center;
+    line-height: 1.1;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+
+.login-brand-sub {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.88rem;
+    margin-top: 8px;
+    text-align: center;
+    letter-spacing: 0.08em;
+}
+
+.login-brand-divider {
+    width: 50px; height: 3px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 2px;
+    margin: 18px auto;
+}
+
+.login-brand-tagline {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.78rem;
+    text-align: center;
+    line-height: 1.7;
+}
+
+/* 右側表單區 */
+.login-right-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+    background: #ffffff;
+}
+
+/* 響應式：手機版隱藏左側 */
+@media (max-width: 768px) {
+    .login-left-panel { display: none; }
+    .login-right-panel { padding: 32px 24px; }
+}
