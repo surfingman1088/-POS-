@@ -49,6 +49,14 @@ class AuditLogsService
 
         $log->save();
 
+        // ── 異常偵測 ─────────────────────────────────────
+        try {
+            app(\App\Services\System\AnomalyDetectorService::class)->analyze($log);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('[AnomalyDetector] 分析失敗', ['error' => $e->getMessage(), 'action' => $action]);
+        }
+        // ── 異常偵測結束 ─────────────────────────────────
+
         return $log;
     }
 

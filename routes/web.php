@@ -51,6 +51,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Logs and Audits
     Route::get('logs', \App\Livewire\Logs\Log::class)->name('logs');
+    Route::get('anomaly-monitor', \App\Livewire\System\AnomalyMonitor::class)->name('anomaly.monitor');
     Route::get('accounts/sessions', \App\Livewire\Logs\Users::class)->name('accounts.sessions');
 
     // ─── 倉儲管理路由（admin / warehouse / branch 角色可存取）────────

@@ -71,6 +71,7 @@
                     <flux:navlist.item icon="user-circle" :href="route('accounts.sessions')" :current="request()->routeIs('accounts.sessions')" wire:navigate>{{ __('Accounts & Sessions') }}</flux:navlist.item>
                     {{-- System Logs --}}
                     <flux:navlist.item icon="server" :href="route('logs')" :current="$logsCurrent" wire:navigate>{{ __('System Logs') }}</flux:navlist.item>
+                    <flux:navlist.item icon="shield-exclamation" :href="route('anomaly.monitor')" :current="request()->routeIs('anomaly.monitor')" wire:navigate>異常監控</flux:navlist.item>
                     @endif
                 </flux:navlist.group>
 
