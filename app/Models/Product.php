@@ -92,4 +92,48 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    /**
+     * 商品規格（變體）
+     */
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    /**
+     * 僅取得啟用中的規格
+     */
+    public function activeVariants()
+    {
+        return $this->hasMany(ProductVariant::class)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
+    /**
+     * 是否有啟用中的規格
+     */
+    public function getHasVariantsAttribute(): bool
+    {
+        return $this->activeVariants()->exists();
+    }
+
+    /**
+     * 取得商品總庫存（含所有規格）
+     * 若有規格則加總各規格庫存，否則使用商品本身庫存
+     */
+    public function getTotalStocksAttribute(): int
+    {
+        if ($this->relationLoaded('variants') && $this->variants->isNotEmpty()) {
+            return (int) $this->variants->where('is_active', true)->sum('stocks');
+        }
+
+        if ($this->activeVariants()->exists()) {
+            return (int) $this->activeVariants()->sum('stocks');
+        }
+
+        return (int) $this->stocks;
+    }
 }

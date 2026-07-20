@@ -391,6 +391,213 @@
         </div>
     </div>
 
+    {{-- VARIANTS MODAL (規格管理) --}}
+    <div wire:ignore.self
+        x-show="$wire.showVariantsModal"
+        x-cloak
+        wire:key="variants-modal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4">
+
+        <div class="absolute inset-0 bg-black/50" wire:click="closeVariantsModal"></div>
+
+        <div x-show="$wire.showVariantsModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="relative bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90dvh] overflow-y-auto z-10">
+
+            {{-- Header --}}
+            <div class="sticky top-0 flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 z-10">
+                <div>
+                    <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                        <i class="fas fa-layer-group text-purple-500"></i>
+                        商品規格管理
+                    </h3>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5" x-text="$wire.variantsProductName"></p>
+                </div>
+                <button wire:click="closeVariantsModal"
+                    class="cursor-pointer w-8 h-8 flex items-center justify-center rounded-full text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-5 space-y-5">
+
+                {{-- 現有規格列表 --}}
+                <div>
+                    <h4 class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">現有規格</h4>
+                    @if(count($variants) === 0)
+                        <div class="text-center py-8 text-zinc-400 dark:text-zinc-500">
+                            <i class="fas fa-layer-group text-3xl mb-2 opacity-40"></i>
+                            <p class="text-sm">尚未新增任何規格</p>
+                            <p class="text-xs mt-1 opacity-70">在下方新增第一個規格</p>
+                        </div>
+                    @else
+                        <div class="space-y-2">
+                            @foreach($variants as $v)
+                                @if($editingVariantId === $v['id'])
+                                    {{-- 編輯模式 --}}
+                                    <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-xl p-3 space-y-3">
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">規格名稱</label>
+                                                <input type="text" wire:model="editVariantName"
+                                                    class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500/40">
+                                                @error('editVariantName') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">規格類型</label>
+                                                <select wire:model="editVariantType"
+                                                    class="cursor-pointer w-full px-2.5 py-1.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500/40">
+                                                    <option value="general">一般規格</option>
+                                                    <option value="color">顏色</option>
+                                                    <option value="size">尺寸</option>
+                                                    <option value="flavor">口味</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">價格（空白=繼承主價）</label>
+                                                <input type="number" step="0.01" wire:model="editVariantPrice" placeholder="繼承主價"
+                                                    class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500/40">
+                                                @error('editVariantPrice') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">庫存數量</label>
+                                                <input type="number" wire:model="editVariantStocks"
+                                                    class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500/40">
+                                                @error('editVariantStocks') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2 justify-end">
+                                            <button wire:click="cancelEditVariant"
+                                                class="cursor-pointer px-3 py-1.5 text-xs font-medium rounded-lg border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition">
+                                                <i class="fas fa-times mr-1"></i>取消
+                                            </button>
+                                            <button wire:click="saveVariant"
+                                                class="cursor-pointer px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition">
+                                                <i class="fas fa-check mr-1"></i>儲存
+                                            </button>
+                                        </div>
+                                    </div>
+                                @else
+                                    {{-- 顯示模式 --}}
+                                    <div class="flex items-center gap-2 px-3 py-2.5 rounded-xl border
+                                        {{ $v['is_active'] ? 'border-zinc-200 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700/40' : 'border-zinc-100 dark:border-zinc-700/50 bg-zinc-50/50 dark:bg-zinc-800/50 opacity-60' }}">
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">{{ $v['name'] }}</span>
+                                                <span class="text-xs px-1.5 py-0.5 rounded-full
+                                                    {{ $v['type'] === 'color' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300' :
+                                                       ($v['type'] === 'size' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
+                                                       ($v['type'] === 'flavor' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' :
+                                                       'bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300')) }}">
+                                                    {{ match($v['type']) { 'color' => '顏色', 'size' => '尺寸', 'flavor' => '口味', default => '規格' } }}
+                                                </span>
+                                                @if(! $v['is_active'])
+                                                    <span class="text-xs text-zinc-400">（已停用）</span>
+                                                @endif
+                                            </div>
+                                            <div class="flex items-center gap-3 mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                                                <span><i class="fas fa-peso-sign mr-0.5"></i>{{ $v['price'] !== null ? number_format($v['price'], 2) : '繼承主價' }}</span>
+                                                <span><i class="fas fa-cubes mr-0.5"></i>庫存: {{ $v['stocks'] }}</span>
+                                                <span><i class="fas fa-chart-bar mr-0.5"></i>已售: {{ $v['sold'] }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-1 shrink-0">
+                                            <button wire:click="startEditVariant({{ $v['id'] }})"
+                                                class="cursor-pointer p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition"
+                                                title="編輯">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </button>
+                                            <button wire:click="toggleVariantActive({{ $v['id'] }})"
+                                                class="cursor-pointer p-1.5 rounded-lg transition
+                                                    {{ $v['is_active'] ? 'text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/20' : 'text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700' }}"
+                                                title="{{ $v['is_active'] ? '停用規格' : '啟用規格' }}">
+                                                <i class="fas {{ $v['is_active'] ? 'fa-toggle-on' : 'fa-toggle-off' }} text-sm"></i>
+                                            </button>
+                                            <button wire:click="deleteVariant({{ $v['id'] }})"
+                                                class="cursor-pointer p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition"
+                                                title="刪除規格"
+                                                onclick="return confirm('確定要刪除規格「{{ $v['name'] }}」？')">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+                {{-- 新增規格表單 --}}
+                <div class="border-t border-zinc-200 dark:border-zinc-700 pt-4">
+                    <h4 class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">新增規格</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">規格名稱 <span class="text-red-500">*</span></label>
+                            <input type="text" wire:model="newVariantName" placeholder="例：紅色、L號、原味"
+                                class="w-full px-3 py-2 text-sm rounded-xl border border-zinc-200 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 transition">
+                            @error('newVariantName') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">規格類型</label>
+                            <select wire:model="newVariantType"
+                                class="cursor-pointer w-full px-3 py-2 text-sm rounded-xl border border-zinc-200 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 transition">
+                                <option value="general">一般規格</option>
+                                <option value="color">顏色</option>
+                                <option value="size">尺寸</option>
+                                <option value="flavor">口味</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">規格價格 <span class="text-zinc-400 font-normal">(空白=繼承主價)</span></label>
+                            <input type="number" step="0.01" wire:model="newVariantPrice" placeholder="繼承主價"
+                                class="w-full px-3 py-2 text-sm rounded-xl border border-zinc-200 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 transition">
+                            @error('newVariantPrice') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">初始庫存 <span class="text-red-500">*</span></label>
+                            <input type="number" wire:model="newVariantStocks" min="0"
+                                class="w-full px-3 py-2 text-sm rounded-xl border border-zinc-200 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500 transition">
+                            @error('newVariantStocks') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-3">
+                        <button wire:click="addVariant"
+                            wire:loading.attr="disabled"
+                            wire:target="addVariant"
+                            class="cursor-pointer px-4 py-2 text-sm font-semibold rounded-xl bg-purple-600 text-white hover:bg-purple-700 active:scale-95 transition-all shadow-md shadow-purple-500/20">
+                            <span wire:loading.remove wire:target="addVariant">
+                                <i class="fas fa-plus mr-1"></i>新增規格
+                            </span>
+                            <span wire:loading wire:target="addVariant">
+                                <i class="fas fa-spinner fa-spin mr-1"></i>存入中...
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- 說明 --}}
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-xl p-3">
+                    <p class="text-xs text-blue-700 dark:text-blue-300">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        <strong>說明：</strong>新增規格後，商品主庫存將自動同步為所有規格庫存的加總。在訂單中選取此商品時，將顯示規格選擇選單。
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 <style>
     .prod-card-btn {
         display: inline-flex;

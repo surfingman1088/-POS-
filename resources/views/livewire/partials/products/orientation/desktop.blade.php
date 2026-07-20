@@ -149,6 +149,13 @@
                                             <span class="text-xs">{{ __('Show') }}</span>
                                         </button>
                                     @endif
+                                    {{-- Variants (admin) --}}
+                                    <button wire:click="openVariantsModal({{ $product->id }})"
+                                        class="tbl-action-btn text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20"
+                                        title="管理商品規格">
+                                        <i class="fas fa-layer-group text-sm"></i>
+                                        <span class="text-xs">規格</span>
+                                    </button>
                                     {{-- Edit (admin only) --}}
                                     <button @click="openEditModal({{ $product->id }})"
                                         class="tbl-action-btn text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
@@ -172,6 +179,13 @@
                                         </span>
                                     @endif
                                 @else
+                                    {{-- Staff: 規格管理 --}}
+                                    <button wire:click="openVariantsModal({{ $product->id }})"
+                                        class="tbl-action-btn text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20"
+                                        title="管理商品規格">
+                                        <i class="fas fa-layer-group text-sm"></i>
+                                        <span class="text-xs">規格</span>
+                                    </button>
                                     {{-- Staff: 入庫按鈕 --}}
                                     <button wire:click="openRestockModal({{ $product->id }})"
                                         class="tbl-action-btn text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20"

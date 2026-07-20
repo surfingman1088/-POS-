@@ -3,6 +3,7 @@
 namespace App\Livewire\Product;
 
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Services\Products\InventoryService;
 use App\Services\System\AuditLogsService;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +42,21 @@ class Dashboard extends Component
     public string $restockProductName = '';
     public int $restockCurrentStock = 0;
     public string|int $restockQty = '';
+
+    // 商品規格管理屬性
+    public bool $showVariantsModal = false;
+    public ?int $variantsProductId = null;
+    public string $variantsProductName = '';
+    public array $variants = [];
+    public string $newVariantName = '';
+    public string $newVariantType = 'general';
+    public string|float $newVariantPrice = '';
+    public string|int $newVariantStocks = 0;
+    public ?int $editingVariantId = null;
+    public string $editVariantName = '';
+    public string $editVariantType = 'general';
+    public string|float $editVariantPrice = '';
+    public string|int $editVariantStocks = 0;
 
     // Form properties
     public $name = '';
@@ -520,6 +536,248 @@ class Dashboard extends Component
         $this->restockCurrentStock = 0;
         $this->restockQty        = '';
         $this->resetErrorBag('restockQty');
+    }
+
+    // =========================================================
+    // 商品規格管理方法
+    // =========================================================
+
+    /**
+     * 開啟規格管理 modal
+     */
+    public function openVariantsModal(int $productId): void
+    {
+        $product = Product::with(['variants' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')])->find($productId);
+
+        if (! $product) {
+            $this->dispatch('show-error', ['message' => __('商品不存在！')]);
+            return;
+        }
+
+        $this->variantsProductId   = $product->id;
+        $this->variantsProductName = $product->name;
+        $this->variants = $product->variants->map(fn ($v) => [
+            'id'         => $v->id,
+            'name'       => $v->name,
+            'type'       => $v->type,
+            'price'      => $v->price !== null ? (float) $v->price : null,
+            'stocks'     => (int) $v->stocks,
+            'sold'       => (int) $v->sold,
+            'is_active'  => (bool) $v->is_active,
+            'sort_order' => (int) $v->sort_order,
+        ])->values()->toArray();
+
+        $this->newVariantName   = '';
+        $this->newVariantType   = 'general';
+        $this->newVariantPrice  = '';
+        $this->newVariantStocks = 0;
+        $this->editingVariantId = null;
+        $this->showVariantsModal = true;
+        $this->resetErrorBag();
+    }
+
+    /**
+     * 新增規格
+     */
+    public function addVariant(): void
+    {
+        $this->validate([
+            'newVariantName'   => 'required|string|max:100',
+            'newVariantType'   => 'required|in:general,color,size,flavor',
+            'newVariantPrice'  => 'nullable|numeric|min:0',
+            'newVariantStocks' => 'required|integer|min:0',
+        ], [
+            'newVariantName.required'   => '請輸入規格名稱。',
+            'newVariantName.max'        => '規格名稱不能超過 100 字元。',
+            'newVariantPrice.numeric'   => '價格必須為數字。',
+            'newVariantPrice.min'       => '價格不能為負數。',
+            'newVariantStocks.required' => '請輸入庫存數量。',
+            'newVariantStocks.integer'  => '庫存必須為整數。',
+            'newVariantStocks.min'      => '庫存不能為負數。',
+        ]);
+
+        $product = Product::find($this->variantsProductId);
+        if (! $product) {
+            $this->dispatch('show-error', ['message' => __('商品不存在！')]);
+            return;
+        }
+
+        $maxOrder = ProductVariant::where('product_id', $product->id)->max('sort_order') ?? -1;
+
+        $variant = ProductVariant::create([
+            'product_id' => $product->id,
+            'name'       => trim($this->newVariantName),
+            'type'       => $this->newVariantType,
+            'price'      => $this->newVariantPrice !== '' ? (float) $this->newVariantPrice : null,
+            'stocks'     => (int) $this->newVariantStocks,
+            'sold'       => 0,
+            'is_active'  => true,
+            'sort_order' => $maxOrder + 1,
+        ]);
+
+        // 同步商品主庫存
+        app(InventoryService::class)->syncProductStocksFromVariants($product);
+
+        // 重新載入規格列表
+        $this->refreshVariantsList();
+
+        $this->newVariantName   = '';
+        $this->newVariantType   = 'general';
+        $this->newVariantPrice  = '';
+        $this->newVariantStocks = 0;
+        $this->resetErrorBag(['newVariantName', 'newVariantPrice', 'newVariantStocks']);
+
+        $this->dispatch('show-success', ['message' => "規格「{$variant->name}」已新增。"]);
+    }
+
+    /**
+     * 開始編輯規格
+     */
+    public function startEditVariant(int $variantId): void
+    {
+        $variant = ProductVariant::find($variantId);
+        if (! $variant) {
+            return;
+        }
+
+        $this->editingVariantId = $variantId;
+        $this->editVariantName  = $variant->name;
+        $this->editVariantType  = $variant->type;
+        $this->editVariantPrice = $variant->price !== null ? (float) $variant->price : '';
+        $this->editVariantStocks = (int) $variant->stocks;
+        $this->resetErrorBag(['editVariantName', 'editVariantPrice', 'editVariantStocks']);
+    }
+
+    /**
+     * 儲存編輯中的規格
+     */
+    public function saveVariant(InventoryService $inventory): void
+    {
+        $this->validate([
+            'editVariantName'   => 'required|string|max:100',
+            'editVariantType'   => 'required|in:general,color,size,flavor',
+            'editVariantPrice'  => 'nullable|numeric|min:0',
+            'editVariantStocks' => 'required|integer|min:0',
+        ], [
+            'editVariantName.required'   => '請輸入規格名稱。',
+            'editVariantPrice.numeric'   => '價格必須為數字。',
+            'editVariantStocks.required' => '請輸入庫存數量。',
+            'editVariantStocks.integer'  => '庫存必須為整數。',
+            'editVariantStocks.min'      => '庫存不能為負數。',
+        ]);
+
+        $variant = ProductVariant::with('product')->find($this->editingVariantId);
+        if (! $variant) {
+            $this->dispatch('show-error', ['message' => '規格不存在！']);
+            return;
+        }
+
+        $oldStocks = (int) $variant->stocks;
+        $newStocks = (int) $this->editVariantStocks;
+
+        $variant->update([
+            'name'   => trim($this->editVariantName),
+            'type'   => $this->editVariantType,
+            'price'  => $this->editVariantPrice !== '' ? (float) $this->editVariantPrice : null,
+            'stocks' => $newStocks,
+        ]);
+
+        // 同步商品主庫存
+        $inventory->syncProductStocksFromVariants($variant->product);
+
+        $this->editingVariantId = null;
+        $this->refreshVariantsList();
+
+        $this->dispatch('show-success', ['message' => "規格「{$variant->name}」已更新。"]);
+    }
+
+    /**
+     * 取消編輯
+     */
+    public function cancelEditVariant(): void
+    {
+        $this->editingVariantId = null;
+        $this->resetErrorBag(['editVariantName', 'editVariantPrice', 'editVariantStocks']);
+    }
+
+    /**
+     * 切換規格啟用狀態
+     */
+    public function toggleVariantActive(int $variantId): void
+    {
+        $variant = ProductVariant::with('product')->find($variantId);
+        if (! $variant) {
+            return;
+        }
+
+        $variant->update(['is_active' => ! $variant->is_active]);
+        app(InventoryService::class)->syncProductStocksFromVariants($variant->product);
+        $this->refreshVariantsList();
+    }
+
+    /**
+     * 刪除規格
+     */
+    public function deleteVariant(int $variantId): void
+    {
+        $variant = ProductVariant::with('product')->find($variantId);
+        if (! $variant) {
+            return;
+        }
+
+        if ($variant->orderItems()->count() > 0) {
+            $this->dispatch('show-error', ['message' => '此規格已有訂單紀錄，無法刪除！請改為停用。']);
+            return;
+        }
+
+        $productName = $variant->name;
+        $product     = $variant->product;
+        $variant->delete();
+
+        app(InventoryService::class)->syncProductStocksFromVariants($product);
+        $this->refreshVariantsList();
+
+        $this->dispatch('show-success', ['message' => "規格「{$productName}」已刪除。"]);
+    }
+
+    /**
+     * 關閉規格管理 modal
+     */
+    public function closeVariantsModal(): void
+    {
+        $this->showVariantsModal = false;
+        $this->variantsProductId = null;
+        $this->variantsProductName = '';
+        $this->variants = [];
+        $this->editingVariantId = null;
+        $this->resetErrorBag();
+    }
+
+    /**
+     * 重新載入規格列表
+     */
+    private function refreshVariantsList(): void
+    {
+        if (! $this->variantsProductId) {
+            return;
+        }
+
+        $this->variants = ProductVariant::where('product_id', $this->variantsProductId)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(fn ($v) => [
+                'id'         => $v->id,
+                'name'       => $v->name,
+                'type'       => $v->type,
+                'price'      => $v->price !== null ? (float) $v->price : null,
+                'stocks'     => (int) $v->stocks,
+                'sold'       => (int) $v->sold,
+                'is_active'  => (bool) $v->is_active,
+                'sort_order' => (int) $v->sort_order,
+            ])
+            ->values()
+            ->toArray();
     }
 
     public function makeAvailable(int $productId, AuditLogsService $audit): void

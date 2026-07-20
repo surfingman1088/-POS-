@@ -16,30 +16,32 @@
             $customersCurrent = request()->routeIs('customers', 'customers.*');
             $employeesCurrent = request()->routeIs('employees', 'employees.*');
             $logsCurrent = request()->routeIs('logs', 'logs.*');
+            $warehouseCurrent = request()->routeIs('warehouse.*');
+            $canAccessWarehouse = Auth::check() && Auth::user()->canAccessWarehouse();
+            $canManageWarehouse = Auth::check() && Auth::user()->canManageWarehouse();
+            $isWarehouseOrBranchOnly = Auth::check() && in_array(Auth::user()->role, ['warehouse', 'branch']);
         @endphp
 
         {{-- Nav Bar (sidebar, header) --}}
         <flux:sidebar sticky stashable class="lg:flex border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" inset="left" />
 
-            <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+            <a href="{{ $isWarehouseOrBranchOnly ? route('warehouse.dashboard') : route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
                 <x-app-logo />
             </a>
 
-            {{-- main nav group --}}
+            {{-- main nav group（倉庫/分店人員不顯示 POS 相關選單）--}}
+            @if(!$isWarehouseOrBranchOnly)
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Shop')" class="grid">
-
                     {{-- dashboard --}}
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="$dashboardCurrent" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-
                 </flux:navlist.group>
 
                 {{-- orders nav group --}}
                 <flux:navlist.group :heading="__('Orders')" class="grid mt-2.5">
                     {{-- orders --}}
                     <flux:navlist.item icon="shopping-cart" :href="route('orders')" :current="$ordersCurrent" wire:navigate>{{ __('Orders') }}</flux:navlist.item>
-
                     {{-- orders records --}}
                     <flux:navlist.item icon="clock" :href="route('orders.history')" :current="$ordersHistoryCurrent" wire:navigate>{{ __('Orders Records') }}</flux:navlist.item>
                 </flux:navlist.group>
@@ -48,10 +50,8 @@
                 <flux:navlist.group :heading="__('Products')" class="grid mt-2.5">
                     {{-- products --}}
                     <flux:navlist.item icon="shopping-bag" :href="route('products')" :current="$productsCurrent" wire:navigate>{{ __('Products') }}</flux:navlist.item>
-
                     {{-- categories --}}
                     <flux:navlist.item icon="tag" :href="route('products.categories')" :current="$productsCategoriesCurrent" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
-
                     {{-- Inventory Audit --}}
                     <flux:navlist.item icon="chart-bar" :href="route('inventory.audit')" :current="request()->routeIs('inventory.audit')" wire:navigate>{{ __('Inventory Audit') }}</flux:navlist.item>
                 </flux:navlist.group>
@@ -65,19 +65,44 @@
                     @if(Auth::check() && Auth::user()->isAdmin())
                     {{-- employees --}}
                     <flux:navlist.item icon="users" :href="route('employees')" :current="$employeesCurrent" wire:navigate>{{ __("Employees") }}</flux:navlist.item>
-
                     {{-- Discount Presets --}}
                     <flux:navlist.item icon="receipt-percent" :href="route('presets.discounts')" :current="request()->routeIs('presets.discounts')" wire:navigate>{{ __('Discount Presets') }}</flux:navlist.item>
-
                     {{-- Accounts & Sessions --}}
                     <flux:navlist.item icon="user-circle" :href="route('accounts.sessions')" :current="request()->routeIs('accounts.sessions')" wire:navigate>{{ __('Accounts & Sessions') }}</flux:navlist.item>
-
                     {{-- System Logs --}}
                     <flux:navlist.item icon="server" :href="route('logs')" :current="$logsCurrent" wire:navigate>{{ __('System Logs') }}</flux:navlist.item>
                     @endif
                 </flux:navlist.group>
 
             </flux:navlist>
+            @endif
+
+            {{-- 倉儲管理導覽選單（admin / warehouse / branch 角色可見）--}}
+            @if($canAccessWarehouse)
+            <flux:navlist variant="outline" class="{{ $isWarehouseOrBranchOnly ? '' : 'mt-2.5' }}">
+                <flux:navlist.group :heading="__('倉儲管理')" class="grid">
+                    {{-- 倉儲總覽 --}}
+                    <flux:navlist.item icon="archive-box" :href="route('warehouse.dashboard')" :current="request()->routeIs('warehouse.dashboard')" wire:navigate>{{ __('倉儲總覽') }}</flux:navlist.item>
+
+                    {{-- 入庫管理（倉庫管理員 + 總管理員）--}}
+                    @if($canManageWarehouse)
+                    <flux:navlist.item icon="arrow-down-tray" :href="route('warehouse.receipt')" :current="request()->routeIs('warehouse.receipt')" wire:navigate>{{ __('入庫管理') }}</flux:navlist.item>
+                    {{-- 出庫管理 --}}
+                    <flux:navlist.item icon="arrow-up-tray" :href="route('warehouse.dispatch')" :current="request()->routeIs('warehouse.dispatch')" wire:navigate>{{ __('出庫管理') }}</flux:navlist.item>
+                    {{-- 庫存盤點 --}}
+                    <flux:navlist.item icon="clipboard-document-check" :href="route('warehouse.stocktake')" :current="request()->routeIs('warehouse.stocktake')" wire:navigate>{{ __('庫存盤點') }}</flux:navlist.item>
+                    @endif
+
+                    {{-- 分店庫存查詢（所有倉儲角色可見）--}}
+                    <flux:navlist.item icon="building-storefront" :href="route('warehouse.branch-stock')" :current="request()->routeIs('warehouse.branch-stock')" wire:navigate>{{ __('分店庫存') }}</flux:navlist.item>
+
+                    {{-- 異動記錄（倉庫管理員 + 總管理員）--}}
+                    @if($canManageWarehouse)
+                    <flux:navlist.item icon="document-text" :href="route('warehouse.movements')" :current="request()->routeIs('warehouse.movements')" wire:navigate>{{ __('異動記錄') }}</flux:navlist.item>
+                    @endif
+                </flux:navlist.group>
+            </flux:navlist>
+            @endif
 
             {{-- add space  --}}
             <flux:spacer />
@@ -104,7 +129,7 @@
 
                                 <div class="grid flex-1 text-start text-sm leading-tight">
                                     <span class="truncate font-semibold">{{ Auth::user()->name }}</span>
-                                    <span class="truncate text-xs">{{ Auth::user()->email }}</span>
+                                    <span class="truncate text-xs text-orange-500">{{ Auth::user()->role_label }}</span>
                                 </div>
                             </div>
                         </div>
@@ -155,7 +180,7 @@
 
                                 <div class="grid flex-1 text-start text-sm leading-tight">
                                     <span class="truncate font-semibold">{{ Auth::user()->name }}</span>
-                                    <span class="truncate text-xs">{{ Auth::user()->email }}</span>
+                                    <span class="truncate text-xs text-orange-500">{{ Auth::user()->role_label }}</span>
                                 </div>
                             </div>
                         </div>

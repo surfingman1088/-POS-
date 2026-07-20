@@ -138,9 +138,18 @@
                                                 </span>
                                             @endif
                                             {{-- 角色標籤 --}}
-                                            @if(($account['role'] ?? 'admin') === 'admin')
+                                            @php $role = $account['role'] ?? 'admin'; @endphp
+                                            @if($role === 'admin')
                                                 <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
                                                     <i class="fas fa-crown text-[9px]"></i>{{ __('Admin') }}
+                                                </span>
+                                            @elseif($role === 'warehouse')
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-900/20 px-2 py-0.5 text-[11px] font-semibold text-green-700 dark:text-green-300">
+                                                    <i class="fas fa-warehouse text-[9px]"></i>倉庫管理員
+                                                </span>
+                                            @elseif($role === 'branch')
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-purple-50 dark:bg-purple-900/20 px-2 py-0.5 text-[11px] font-semibold text-purple-700 dark:text-purple-300">
+                                                    <i class="fas fa-store text-[9px]"></i>分店人員
                                                 </span>
                                             @else
                                                 <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
@@ -224,9 +233,18 @@
                                             <i class="fas fa-circle text-[6px]"></i>{{ __('Offline') }}
                                         </span>
                                     @endif
-                                    @if(($account['role'] ?? 'admin') === 'admin')
+                                    @php $role = $account['role'] ?? 'admin'; @endphp
+                                    @if($role === 'admin')
                                         <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
                                             <i class="fas fa-crown text-[9px]"></i>{{ __('Admin') }}
+                                        </span>
+                                    @elseif($role === 'warehouse')
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-900/20 px-2 py-0.5 text-[11px] font-semibold text-green-700 dark:text-green-300">
+                                            <i class="fas fa-warehouse text-[9px]"></i>倉庫管理員
+                                        </span>
+                                    @elseif($role === 'branch')
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-purple-50 dark:bg-purple-900/20 px-2 py-0.5 text-[11px] font-semibold text-purple-700 dark:text-purple-300">
+                                            <i class="fas fa-store text-[9px]"></i>分店人員
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
@@ -685,6 +703,8 @@
                                 class="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                             <option value="staff">{{ __('Staff') }} — {{ __('Limited access') }}</option>
                             <option value="admin">{{ __('Admin') }} — {{ __('Full access') }}</option>
+                            <option value="warehouse">倉庫管理員 — 倉儲模組管理</option>
+                            <option value="branch">分店人員 — 分店庫存查詢</option>
                         </select>
                         <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                             <i class="fas fa-info-circle mr-1"></i>

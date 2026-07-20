@@ -9,6 +9,7 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'variant_id',
         'quantity',
         'refunded_quantity',  // tracks how many units have been returned
         'unit_price',
@@ -32,6 +33,26 @@ class OrderItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * 訂單項目的商品規格
+     */
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
+    }
+
+    /**
+     * 取得顯示名稱（含規格）
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        $name = $this->product?->name ?? '(deleted)';
+        if ($this->variant_id && $this->variant) {
+            $name .= ' - ' . $this->variant->name;
+        }
+        return $name;
     }
 
     /**

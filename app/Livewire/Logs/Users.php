@@ -81,10 +81,10 @@ class Users extends Component
                 'required', 'string', 'min:6', 'confirmed',
             ],
             'createUser.lang'     => ['required', 'in:en,zh'],
-            'createUser.role'     => ['required', 'in:admin,staff'],
+            'createUser.role'     => ['required', 'in:admin,staff,warehouse,branch'],
         ]);
 
-        $isStaff = $validated['createUser']['role'] === 'staff';
+        $isStaff = in_array($validated['createUser']['role'], ['staff', 'warehouse', 'branch']);
 
         $account = User::create([
             'name'                  => ucwords($validated['createUser']['name']),

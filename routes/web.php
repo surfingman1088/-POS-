@@ -10,11 +10,6 @@ Route::get('/', function () {
     ->name('home');
 
 // dashboard
-// Route::view('dashboard', 'dashboard')
-//     ->middleware(['auth', 'verified'])
-//     ->name('dashboard');
-
-// dashboard
 Volt::route('dashboard', 'main.dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
@@ -57,6 +52,22 @@ Route::middleware(['auth'])->group(function () {
     // Logs and Audits
     Route::get('logs', \App\Livewire\Logs\Log::class)->name('logs');
     Route::get('accounts/sessions', \App\Livewire\Logs\Users::class)->name('accounts.sessions');
+
+    // ─── 倉儲管理路由（admin / warehouse / branch 角色可存取）────────
+    Route::middleware(['warehouse.access'])->prefix('warehouse')->name('warehouse.')->group(function () {
+        // 倉儲儀表板
+        Route::get('/', \App\Livewire\Warehouse\Dashboard::class)->name('dashboard');
+        // 入庫管理
+        Route::get('/receipt', \App\Livewire\Warehouse\Receipt::class)->name('receipt');
+        // 出庫管理
+        Route::get('/dispatch', \App\Livewire\Warehouse\Dispatch::class)->name('dispatch');
+        // 庫存盤點
+        Route::get('/stocktake', \App\Livewire\Warehouse\Stocktake::class)->name('stocktake');
+        // 分店庫存查詢
+        Route::get('/branch-stock', \App\Livewire\Warehouse\BranchStockView::class)->name('branch-stock');
+        // 異動記錄
+        Route::get('/movements', \App\Livewire\Warehouse\MovementLog::class)->name('movements');
+    });
 
     Route::get('payment-qr/{path}', function (string $path) {
         abort_unless(Storage::disk('public')->exists($path), 404);
