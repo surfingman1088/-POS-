@@ -170,8 +170,8 @@ class WarehouseService
                     'notes'           => "撥貨到{$branch->name}，出庫單 {$dispatch->dispatch_no}",
                 ]);
 
-                // 同步更新 POS products 表的庫存（直連同一資料庫）
-                $this->syncPosProductStock($productId, $variantId);
+                // 同步更新對應分店的 POS products 表庫存
+                $this->syncPosProductStock($branch, $productId, $variantId, $qty, $dispatch->id);
             }
 
             return $dispatch;
@@ -269,8 +269,10 @@ class WarehouseService
                     'notes'           => "盤點調整 {$stocktake->stocktake_no}",
                 ]);
 
-                // 同步 POS 庫存
-                $this->syncPosProductStock($item->product_id, $item->variant_id);
+                // 同步 POS 庫存 (若是分店盤點，需更新分店庫存)
+                if ($stocktake->type === 'branch' && $stocktake->branch) {
+                    $this->syncPosProductStock($stocktake->branch, $item->product_id, $item->variant_id, $item->difference, $stocktake->id);
+                }
             }
 
             $stocktake->update([
@@ -289,30 +291,101 @@ class WarehouseService
      * 將所有分店庫存加總後同步回 POS products.stocks 欄位
      * 讓 POS 訂單頁面能即時反映正確庫存
      */
-    public function syncPosProductStock(int $productId, ?int $variantId = null): void
+    /**
+     * 將出庫數量同步到對應分店的 POS 資料庫
+     */
+    public function syncPosProductStock(Branch $branch, int $productId, ?int $variantId, int $quantity, int $dispatchId): void
     {
-        if ($variantId) {
-            // 有規格：更新 product_variants.stocks
-            $totalBranchStock = BranchStock::where('product_id', $productId)
-                ->where('variant_id', $variantId)
-                ->sum('quantity');
+        if (empty($branch->db_connection)) {
+            \Log::warning("分店 {$branch->name} 沒有設定 db_connection，無法同步 POS 庫存。");
+            return;
+        }
 
-            \App\Models\ProductVariant::where('id', $variantId)
-                ->update(['stocks' => $totalBranchStock]);
+        try {
+            $connection = DB::connection($branch->db_connection);
 
-            // 同步主商品庫存為所有規格的加總
-            $totalVariantStock = \App\Models\ProductVariant::where('product_id', $productId)
-                ->where('is_active', true)
-                ->sum('stocks');
+            // 在 POS 資料庫中開啟交易
+            $connection->transaction(function () use ($connection, $productId, $variantId, $quantity, $dispatchId) {
+                if ($variantId) {
+                    // 有規格：更新 product_variants.stocks
+                    $variant = $connection->table('product_variants')->where('id', $variantId)->first();
+                    if ($variant) {
+                        $beforeVariantStock = $variant->stocks;
+                        $afterVariantStock = $beforeVariantStock + $quantity;
+                        $connection->table('product_variants')->where('id', $variantId)->update(['stocks' => $afterVariantStock]);
 
-            Product::where('id', $productId)->update(['stocks' => $totalVariantStock]);
-        } else {
-            // 無規格：直接加總所有分店庫存
-            $totalBranchStock = BranchStock::where('product_id', $productId)
-                ->whereNull('variant_id')
-                ->sum('quantity');
+                        // 更新主商品庫存為所有規格的加總
+                        $totalVariantStock = $connection->table('product_variants')
+                            ->where('product_id', $productId)
+                            ->where('is_active', true)
+                            ->sum('stocks');
+                        
+                        $product = $connection->table('products')->where('id', $productId)->first();
+                        if ($product) {
+                            $beforeStock = $product->stocks;
+                            $afterStock = $totalVariantStock;
+                            $isInStock = $afterStock > 0 ? 1 : 0;
+                            
+                            $connection->table('products')->where('id', $productId)->update([
+                                'stocks' => $afterStock,
+                                'is_in_stock' => $isInStock
+                            ]);
 
-            Product::where('id', $productId)->update(['stocks' => $totalBranchStock]);
+                            // 寫入 POS inventory_movements (主商品)
+                            $connection->table('inventory_movements')->insert([
+                                'product_id' => $productId,
+                                'user_id' => null, // 系統自動
+                                'type' => 'warehouse_dispatch',
+                                'quantity' => $quantity,
+                                'before_stocks' => $beforeStock,
+                                'before_sold' => $product->sold ?? 0,
+                                'after_stocks' => $afterStock,
+                                'after_sold' => $product->sold ?? 0,
+                                'reference_type' => 'warehouse_dispatch',
+                                'reference_id' => $dispatchId,
+                                'remarks' => "倉儲系統出庫單 {$dispatchId} 同步",
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
+                        }
+                    }
+                } else {
+                    // 無規格：直接更新 products.stocks
+                    $product = $connection->table('products')->where('id', $productId)->first();
+                    if ($product) {
+                        $beforeStock = $product->stocks;
+                        $afterStock = $beforeStock + $quantity;
+                        $isInStock = $afterStock > 0 ? 1 : 0;
+
+                        $connection->table('products')->where('id', $productId)->update([
+                            'stocks' => $afterStock,
+                            'is_in_stock' => $isInStock
+                        ]);
+
+                        // 寫入 POS inventory_movements
+                        $connection->table('inventory_movements')->insert([
+                            'product_id' => $productId,
+                            'user_id' => null, // 系統自動
+                            'type' => 'warehouse_dispatch',
+                            'quantity' => $quantity,
+                            'before_stocks' => $beforeStock,
+                            'before_sold' => $product->sold ?? 0,
+                            'after_stocks' => $afterStock,
+                            'after_sold' => $product->sold ?? 0,
+                            'reference_type' => 'warehouse_dispatch',
+                            'reference_id' => $dispatchId,
+                            'remarks' => "倉儲系統出庫單 {$dispatchId} 同步",
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    } else {
+                        \Log::warning("POS DB 中找不到商品 ID: {$productId}");
+                    }
+                }
+            });
+        } catch (\Exception $e) {
+            \Log::error("同步 POS 庫存失敗: " . $e->getMessage());
+            throw $e;
         }
     }
 
